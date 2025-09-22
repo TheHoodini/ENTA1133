@@ -32,43 +32,69 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                           "                                        $$$$$$/                                           ");
             // Ask for the player's name and type of text printer to start the game
             string playerName = ChoosePlayerName();
-            string printType = ChooseTextType();
+            string printType = ChooseOption("Choose the type of text printer (type the number):\n1. Typewriter Effect\n2. Regular Print\n>");
+            string rulesType = ChooseOption("Do you want to read the rules? (type the number):\n1. Yes\n2. No\n>");
+            if (rulesType == "1")
+            {
+                textPrinter.Print(printType, "\nRules:\n" +
+                    "1. Pick a type of die.\n" +
+                    "2. \n" +
+                    "3. \n" +
+                    "4. \n");
+            }
             DateOnly todayDate = DateOnly.FromDateTime(DateTime.Now);
-            textPrinter.Print(printType, "\nWelcome " + playerName + "! Let's play Crazy Dice!\n" + todayDate + "\n");
+            textPrinter.Print(printType, "\nNow we can begin! " + playerName + ", let's play Crazy Dice!\n" + todayDate + "\n");
+            // Start the game with the chosen settings
             Play(playerName, printType);
         }
 
         // Start a game round
         public void Play(string playerName, string printType)
         {
-            Console.WriteLine("Game start");
+            // Decide who starts first
+            textPrinter.Print(printType, "Deciding turn...\n");
+            Random rand = new Random();
+            int coinFlip = rand.Next(2);
+            if (coinFlip == 1)
+            {
+                textPrinter.Print(printType, "You start first!\n");
+                textPrinter.Print(printType, "Choose one of these dice: d4, d6, d8, d12 and d20");
+                Console.ReadLine();
+            }
+            else
+            {
+                textPrinter.Print(printType, "Computer starts first!\n");
+            }
+
+
         }
 
         // Function to choose the type of text printer 
-        static string ChooseTextType()
+        static string ChooseOption(string text)
         {
-            Console.WriteLine("Choose the type of text printer (type the number):\n1. Typewriter Effect\n2. Regular Print");
-            string typeChoice = Console.ReadLine();
-            if (typeChoice == "1" || typeChoice == "2")
+            Console.Write(text);
+            string choice = Console.ReadLine();
+            if (choice == "1" || choice == "2")
             {
-                return typeChoice; 
+                return choice; 
             }
             else
             {
                 // Ask again in a recursive way if the input is invalid
                 Console.WriteLine("Invalid answer, please choose between 1 or 2.\n");
-                return ChooseTextType(); 
+                return ChooseOption(text); 
             }
         }
 
         // Function to choose the player's name and check if it's not blank
         static string ChoosePlayerName()
         {
-            Console.WriteLine("What is your name?");
+            Console.Write("What is your name?\n>");
             string name = Console.ReadLine();
             // Ask again in a recursive way if the input is blank
             if (string.IsNullOrWhiteSpace(name))
-            {                Console.WriteLine("Please type a name!");
+            {                
+                Console.WriteLine("Please type a name!");
                 return ChoosePlayerName();
             }
             else
