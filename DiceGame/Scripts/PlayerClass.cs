@@ -9,6 +9,10 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
     internal class PlayerClass(string playerName)
     {
         private string name = playerName;
-        internal string GetName() { return name; }
+        int score = 0;
+
+        public string Name => name;
+        public int Score => score;
+        internal int addScore(int points) { score += points; return score; } 
     }
 }

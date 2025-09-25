@@ -19,6 +19,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                     Thread.Sleep(20);
                 }
                 Console.WriteLine();
+                Thread.Sleep(400);
             }
             else
             {
