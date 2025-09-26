@@ -43,39 +43,48 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
         }
 
         // Function to choose the die type and check if it's valid
-        public string ChooseDie(DieRoller dieRoller)
+        public string ChooseDie(DieRoller dieRoller, bool isPlayer)
         {
-            Console.Write("Choose a die to roll:\nd4  d6  d8  d12  d20\n>");
-            string input = Console.ReadLine()?.ToLower();
+            string dieOption = "";
+            if (isPlayer) 
+            {
+                Console.Write("Choose a die to roll:\nd4  d6  d8  d12  d20\n>");
+                dieOption = Console.ReadLine()?.ToLower();
+            } else
+            {
+                string[] options = { "d4", "d6", "d8", "d12", "d20" };
+                Random random = new Random();
+                dieOption = options[random.Next(options.Length)];
+            }
             // Check if the input is valid and if the die is available
-            if (input == "d4")
+            if (dieOption == "d4")
             {
                 if (dieRoller.IsD4Available) return "d4";
             }
-            else if (input == "d6")
+            else if (dieOption == "d6")
             {
                 if (dieRoller.IsD6Available) return "d6";
             }
-            else if (input == "d8")
+            else if (dieOption == "d8")
             {
                 if (dieRoller.IsD8Available) return "d8";
             }
-            else if (input == "d12")
+            else if (dieOption == "d12")
             {
                 if (dieRoller.IsD12Available) return "d12";
             }
-            else if (input == "d20")
+            else if (dieOption == "d20")
             {
                 if (dieRoller.IsD20Available) return "d20";
             }
             else
             {
-                Console.WriteLine("Invalid answer, please choose between d4, d6, d8, d12 or d20\n");
-                return ChooseDie(dieRoller);
+                if (isPlayer) { Console.WriteLine("Invalid answer, please choose between d4, d6, d8, d12 or d20\n"); }
+                return ChooseDie(dieRoller, isPlayer);
             }
 
-            Console.WriteLine("This die has already been used, please choose another one.\n");
-            return ChooseDie(dieRoller);
+            if (isPlayer) { Console.WriteLine("This die has already been used, please choose another one.\n"); }
+            return ChooseDie(dieRoller, isPlayer);
         }
 
     }

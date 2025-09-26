@@ -47,29 +47,73 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             }
             // Greet the player and show the current date
             DateOnly todayDate = DateOnly.FromDateTime(DateTime.Now);
-            textPrinter.Print(printType, "\nWelcome " + player1.Name + "! Let's play Crazy Dice!\n" + todayDate + "\n");
-            Play(printType, player1);
+            textPrinter.Print(printType, "\n" + todayDate + "\nWelcome " + player1.Name + "! Let's play Crazy Dice!\n");
+
+            // Create a CPU player
+            PlayerClass playerCpu = new PlayerClass("Player 2");
+            Play(printType, player1, playerCpu);
         }
 
         // ------------------- Start a game round -------------------
-        public void Play(string printType, PlayerClass player)
+        public void Play(string printType, PlayerClass player1, PlayerClass player2)
         {
             DieRoller dieRoller = new DieRoller(printType);
             // Decide turns
             textPrinter.Print(printType, "Flipping the coin to decide who starts...");
-            int coinFlip = random.Next(1, 3); 
+            int coinFlip = random.Next(1, 3);
+            int roll = 0;
+            // First turn
             if (coinFlip == 1)
             {
-                textPrinter.Print(printType, player.Name + " starts!\n");
-                string dieType = inputManager.ChooseDie(dieRoller);
-                dieRoller.Roll(dieType);
+                textPrinter.Print(printType, player1.Name + " starts!\n");
+                // check the die the player wants to roll and roll it
+                string dieType = inputManager.ChooseDie(dieRoller, true);
+                roll = dieRoller.Roll(dieType);
+                // Add the score
+                player1.addScore(roll);
             }
             else
             {
-                textPrinter.Print(printType, "Player 2 starts!\n");
+                textPrinter.Print(printType, "The CPU starts!\n");
+                textPrinter.Print(printType, "The CPU is picking their die...");
+                string dieType = inputManager.ChooseDie(dieRoller, false);
+                roll = dieRoller.Roll(dieType);
+                // Add the score
+                player2.addScore(roll);
             }
 
+            // Second turn
+            if (coinFlip != 1) // If player 2 started, player 1 goes now
+            {
+                // check the die the player wants to roll and roll it
+                textPrinter.Print(printType, "\nNow it's your turn!");
+                string dieType = inputManager.ChooseDie(dieRoller, true);
+                roll = dieRoller.Roll(dieType);
+                // Add the score
+                player1.addScore(roll);
+            }
+            else // If player 1 started, player 2 goes now
+            {
+                textPrinter.Print(printType, "\nNow it's CPU's turn to pick their die...");
+                string dieType = inputManager.ChooseDie(dieRoller, false);
+                roll = dieRoller.Roll(dieType);
+                // Add the score
+                player2.addScore(roll);
+            }
 
+            if (player1.Score > player2.Score)
+            {
+                textPrinter.Print(printType, "\n" + player1.Name + " wins with a score of " + player1.Score + "! Congratulations!");
+            }
+            else if (player1.Score < player2.Score)
+            {
+                textPrinter.Print(printType, "\n The CPU wins with a score of " + player2.Score + "! Better luck next time!");
+            }
+            else
+            {
+                textPrinter.Print(printType, "\nIt's a tie! Another round will start!");
+                Play(printType, player1, player2); // Start another round in case of a tie
+            }
         }
 
     }

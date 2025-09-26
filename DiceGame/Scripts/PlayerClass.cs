@@ -13,6 +13,6 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
 
         public string Name => name;
         public int Score => score;
-        internal int addScore(int points) { score += points; return score; } 
+        internal void addScore(int points) { score += points; } 
     }
 }
