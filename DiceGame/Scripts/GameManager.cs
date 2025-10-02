@@ -11,7 +11,17 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
         TextPrinter textPrinter = new TextPrinter();
         InputManager inputManager = new InputManager();
         Random random = new Random();
+
+        string playerName;
+        PlayerClass player1;
+        string printType;
+
         public void Start()
+        {
+            Welcome();
+            Play();
+        }
+        public void Welcome()
         {
             // Display the game title
             Console.WriteLine("              _                            _                 \n" +
@@ -33,31 +43,62 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                           "                                       $$    $$/                                          \n" +
                           "                                        $$$$$$/                                           ");
             // Ask for the player's name and type of text printer to start the game
-            string playerName = inputManager.ChoosePlayerName();
-            PlayerClass player1 = new PlayerClass(playerName); // Create a player object with the name entered
-            string printType = inputManager.ChooseOption("Choose the type of text printer (type the number):\n1. Typewriter Effect\n2. Regular Print\n>");
-            string rulesOption = inputManager.ChooseOption("Do you want to read the rules? (type the number):\n1. Yes\n2. No\n>");
+            Console.Write("What is your name?\n>");
+            do
+            {
+                playerName = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(playerName))
+                {
+                    Console.WriteLine("Please type a name!");
+                    Console.Write("> ");
+                }
+            } while (string.IsNullOrWhiteSpace(playerName));
+            player1 = new PlayerClass(playerName); // Create a player object with the name entered
+
+            // Ask for the type of text printer
+            Console.Write("Choose the type of text printer (type the number):\n1. Typewriter Effect\n2. Regular Print\n>");
+            do
+            {
+                printType = Console.ReadLine();
+                if (printType != "1" && printType != "2")
+                {
+                    Console.WriteLine("Invalid answer, please choose between 1 or 2.\n");
+                    Console.Write("> ");
+                }
+            } while (printType != "1" && printType != "2");
+
+            // Ask if the player wants to read the rules
+            string rulesOption;
+            Console.Write("Do you want to read the rules? (type the number):\n1. Yes\n2. No\n>");
+            do
+            {
+                rulesOption = Console.ReadLine();
+                if (rulesOption != "1" && rulesOption != "2")
+                {
+                    Console.WriteLine("Invalid answer, please choose between 1 or 2.\n");
+                    Console.Write(">");
+                }
+            } while (rulesOption != "1" && rulesOption != "2");
             if (rulesOption == "1")
             {
                 textPrinter.Print(printType, "\nRules:\n" +
                     "1. First we flip a coin to decide the turn order\n" +
-                    "2. The first player chooses a die to roll between some options and rolls it\n" +
+                    "2. The first player chooses the die the other player will roll\n" +
                     "3. The second one chooses a different die and rolls it\n" +
                     "4. The player with the highest score wins");
             }
+
             // Greet the player and show the current date
             DateOnly todayDate = DateOnly.FromDateTime(DateTime.Now);
             textPrinter.Print(printType, "\n" + todayDate + "\nWelcome " + player1.Name + "! Let's play Crazy Dice!\n");
-
-            // Create a CPU player
-            PlayerClass playerCpu = new PlayerClass("Player 2");
-            Play(printType, player1, playerCpu);
         }
 
         // ------------------- Start a game round -------------------
-        public void Play(string printType, PlayerClass player1, PlayerClass player2)
+        public void Play()
         {
             DieRoller dieRoller = new DieRoller(printType);
+            // Create a CPU player
+            PlayerClass playerCpu = new PlayerClass("Player 2");
             // Decide turns
             textPrinter.Print(printType, "Flipping the coin to decide who starts...");
             int coinFlip = random.Next(1, 3);
@@ -79,7 +120,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                 string dieType = inputManager.ChooseDie(dieRoller, false);
                 roll = dieRoller.Roll(dieType);
                 // Add the score
-                player2.addScore(roll);
+                playerCpu.addScore(roll);
             }
 
             // Second turn
@@ -98,21 +139,21 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                 string dieType = inputManager.ChooseDie(dieRoller, false);
                 roll = dieRoller.Roll(dieType);
                 // Add the score
-                player2.addScore(roll);
+                playerCpu.addScore(roll);
             }
 
-            if (player1.Score > player2.Score)
+            if (player1.Score > playerCpu.Score)
             {
                 textPrinter.Print(printType, "\n" + player1.Name + " wins with a score of " + player1.Score + "! Congratulations!");
             }
-            else if (player1.Score < player2.Score)
+            else if (player1.Score < playerCpu.Score)
             {
-                textPrinter.Print(printType, "\n The CPU wins with a score of " + player2.Score + "! Better luck next time!");
+                textPrinter.Print(printType, "\n The CPU wins with a score of " + playerCpu.Score + "! Better luck next time!");
             }
             else
             {
                 textPrinter.Print(printType, "\nIt's a tie! Another round will start!");
-                Play(printType, player1, player2); // Start another round in case of a tie
+                Play(); // Start another round in case of a tie
             }
         }
 
