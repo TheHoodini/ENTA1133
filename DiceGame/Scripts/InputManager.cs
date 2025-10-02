@@ -38,6 +38,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                     dieOption = options[random.Next(options.Length)];
                 }
 
+                // Validate the chosen die
                 if (dieAvailability.ContainsKey(dieOption))
                 {
                     if (dieAvailability[dieOption])

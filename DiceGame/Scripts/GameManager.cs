@@ -83,8 +83,8 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             {
                 textPrinter.Print(printType, "\nRules:\n" +
                     "1. First we flip a coin to decide the turn order\n" +
-                    "2. The first player chooses the die the other player will roll\n" +
-                    "3. The second one chooses a different die and rolls it\n" +
+                    "2. The first player picks the die the other player will roll and then the die they will roll\n" +
+                    "3. The second one picks the die of the first player and then their own die\n" +
                     "4. The player with the highest score wins");
             }
 
