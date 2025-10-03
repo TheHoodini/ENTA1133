@@ -27,7 +27,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                     Thread.Sleep(20);
                 }
                 Console.WriteLine();
-                Thread.Sleep(400);
+                Thread.Sleep(200);
             }
             else
             {
@@ -38,7 +38,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
         public void Dialogue(string character, string text, bool clearConsole = false)
         { 
             if (clearConsole) { Console.Clear(); } else { Console.WriteLine("\n"); }
-            const int dBoxWidth = 56; // Max characters per line
+            const int dBoxWidth = 56; 
             string upperCharacter = character.ToUpper();
 
             // Centered top line
@@ -71,7 +71,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             Console.SetCursorPosition(0, currentLine);
         }
 
-        // Helper method to wrap text into lines of diLalog box
+        // Helper method to wrap text into lines to fit within a specified width
         private List<string> WrapText(string text, int maxLineLength)
         {
             var lines = new List<string>();

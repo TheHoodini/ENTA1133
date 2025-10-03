@@ -10,23 +10,21 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
     {
         private string name = playerName;
         int score = 0;
-        private List<string> dice = new List<string> { "d6", "d8", "d10", "d12", "d20" };
-
+        private List<string> dice = new List<string>();
+        internal List<string> Dice => new List<string>(dice);
         public string Name => name;
         public int Score => score;
-        internal void addScore(int points) { score += points; } 
 
-        internal string GetDie(string die)
+        internal void addScore(int points) { score += points; }
+
+        internal void AddDice(IEnumerable<string> diceToAdd)
         {
-            if (dice.Contains(die))
-            {
-                dice.Remove(die);
-                return die;
-            }
-            else
-            {
-                return null;
-            }
+            dice.AddRange(diceToAdd);
+        }
+
+        internal void RemoveDie(string die)
+        {
+            dice.Remove(die);
         }
     }
 }

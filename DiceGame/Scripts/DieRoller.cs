@@ -7,42 +7,23 @@ using System.Threading.Tasks;
 
 namespace GD14_1133_A1_JuanDiego_DiceGame
 {
-    internal class DieRoller()
+    internal class DieRoller
     {
         private readonly Random random = new();
-        private readonly TextPrinter textPrinter = new();
-
-        // Die configuration and availability list
-        private readonly Dictionary<string, (int MaxRoll, bool Available)> dice = new()
+        public int Roll(string dieType, TextPrinter textPrinter, bool isPlayer = true)
         {
-            { "d4",  (4, true) },
-            { "d6",  (6, true) },
-            { "d8",  (8, true) },
-            { "d12", (12, true) },
-            { "d20", (20, true) }
-        };
+            // Extract the maximum roll from the die type 
+            int maxRoll = int.Parse(dieType[1..]);
 
-        // Properties to expose availability
-        public bool IsD4Available => dice["d4"].Available;
-        public bool IsD6Available => dice["d6"].Available;
-        public bool IsD8Available => dice["d8"].Available;
-        public bool IsD12Available => dice["d12"].Available;
-        public bool IsD20Available => dice["d20"].Available;
+            // Generate a random roll between 1 and the max roll
+            int rollResult = random.Next(1, maxRoll + 1);
 
-        public int Roll(string dieType)
-        {
-            var (maxRoll, isAvailable) = dice[dieType];
-            textPrinter.Print($"Rolling the {dieType}...");
+            string name;
+            if (isPlayer) { name = "You"; } else { name = "Dizarius"; }
+            textPrinter.Print($"{name} rolled a {dieType}... The result was a {rollResult}!");
 
-            int roll = random.Next(1, maxRoll + 1);
-
-            // Mark die as unavailable
-            dice[dieType] = (maxRoll, false);
-
-            textPrinter.Print($"The {dieType} rolled a {roll}");
-
-            // Commentary based on roll
-            string comment = roll switch
+            // Comment based on roll
+            string comment = rollResult switch
             {
                 int r when r == maxRoll => "Excellent, a maximum roll!!!",
                 1 => "A critical fail...",
@@ -52,8 +33,10 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
             };
 
             textPrinter.Print(comment);
-            return roll;
+            return rollResult;
         }
     }
+
+
 
 }
