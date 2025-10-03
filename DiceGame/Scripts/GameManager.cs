@@ -14,7 +14,6 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
 
         string playerName;
         PlayerClass player1;
-        string printType;
 
         public void Start()
         {
@@ -41,72 +40,91 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                           " $$$$$$/  $$/       $$$$$$$/ $$$$$$$$/  $$$$$$$ |       $$$$$$$/ $$/  $$$$$$$/  $$$$$$$/ \n" +
                           "                                       /  \\__$$ |                                       \n" +
                           "                                       $$    $$/                                          \n" +
-                          "                                        $$$$$$/                                           ");
-            // Ask for the player's name and type of text printer to start the game
-            Console.Write("What is your name?\n>");
+                          "                                        $$$$$$/                                           \n\n");
+            bool isReady = false;
+            // Welcome the player
+            Console.WriteLine("Press ENTER to start\n");
+            Console.ReadLine();
+            textPrinter.Dialogue("Dizarius", "Welcome young person, I'm Dizarius the dice wizard. Please choose the type of text printer you desire (type the number):\n1. Typewriter Effect\n2. Regular Print");
             do
             {
-                playerName = Console.ReadLine();
-                if (string.IsNullOrWhiteSpace(playerName))
+                // Ask for the type of text printer
+                do
                 {
-                    Console.WriteLine("Please type a name!");
-                    Console.Write("> ");
-                }
-            } while (string.IsNullOrWhiteSpace(playerName));
-            player1 = new PlayerClass(playerName); // Create a player object with the name entered
+                    Console.Write("[YOU] ");
+                    textPrinter.PrinterType = Console.ReadLine();
+                    if (textPrinter.PrinterType != "1" && textPrinter.PrinterType != "2")
+                    {
+                        Console.WriteLine("Invalid answer, please choose between 1 or 2.\n");
+                        Console.Write("[YOU] ");
+                    }
+                } while (textPrinter.PrinterType != "1" && textPrinter.PrinterType != "2");
 
-            // Ask for the type of text printer
-            Console.Write("Choose the type of text printer (type the number):\n1. Typewriter Effect\n2. Regular Print\n>");
-            do
-            {
-                printType = Console.ReadLine();
-                if (printType != "1" && printType != "2")
+                // Ask for the player's name and type of text printer to start the game
+                textPrinter.Dialogue("Dizarius", "Great to know. Now, what is your name?");
+                do
                 {
-                    Console.WriteLine("Invalid answer, please choose between 1 or 2.\n");
-                    Console.Write("> ");
-                }
-            } while (printType != "1" && printType != "2");
+                    Console.Write("[YOU] ");
+                    playerName = Console.ReadLine();
+                    if (string.IsNullOrWhiteSpace(playerName))
+                    {
+                        textPrinter.Dialogue("Dizarius", "Please talk young person, what is your name?");
 
-            // Ask if the player wants to read the rules
-            string rulesOption;
-            Console.Write("Do you want to read the rules? (type the number):\n1. Yes\n2. No\n>");
-            do
-            {
-                rulesOption = Console.ReadLine();
-                if (rulesOption != "1" && rulesOption != "2")
-                {
-                    Console.WriteLine("Invalid answer, please choose between 1 or 2.\n");
-                    Console.Write(">");
-                }
-            } while (rulesOption != "1" && rulesOption != "2");
-            if (rulesOption == "1")
-            {
-                textPrinter.Print(printType, "\nRules:\n" +
+                    }
+                } while (string.IsNullOrWhiteSpace(playerName));
+                player1 = new PlayerClass(playerName); // Create a player object with the name entered
+
+                // Print rules
+                textPrinter.Dialogue("Dizarius", "\nOkay " + player1.Name + ", these are the game rules:\n" +
                     "1. First we flip a coin to decide the turn order\n" +
                     "2. The first player picks the die the other player will roll and then the die they will roll\n" +
                     "3. The second one picks the die of the first player and then their own die\n" +
                     "4. The player with the highest score wins");
-            }
+
+                // Ask if the player is ready to start
+                textPrinter.Print("\nAre you ready to start? \n1. Yes\n2. No\n> ");
+                do
+                {
+                    string readyOption = Console.ReadLine();
+                    if (readyOption == "1")
+                    {
+                        isReady = true;
+                    }
+                    else if (readyOption == "2")
+                    {
+                        textPrinter.Print("Take your time, let me know when you're ready!\n");
+                        Console.Write("Are you ready now? \n1. Yes\n2. No\n>");
+                    }
+                    else
+                    {
+                        textPrinter.Print("Invalid answer, please choose between 1 or 2.\n");
+                        Console.Write("> ");
+                    }
+                } while (textPrinter.PrinterType != "1" && textPrinter.PrinterType != "2");
+
+
+            } while (!isReady);
 
             // Greet the player and show the current date
             DateOnly todayDate = DateOnly.FromDateTime(DateTime.Now);
-            textPrinter.Print(printType, "\n" + todayDate + "\nWelcome " + player1.Name + "! Let's play Crazy Dice!\n");
+            textPrinter.Print("\n" + todayDate + "\nThen, welcome " + player1.Name + "! Let's play Crazy Dice!\n");
         }
 
         // ------------------- Start a game round -------------------
         public void Play()
         {
-            DieRoller dieRoller = new DieRoller(printType);
+            bool wantsToPlay = true;
+            DieRoller dieRoller = new DieRoller();
             // Create a CPU player
             PlayerClass playerCpu = new PlayerClass("Player 2");
             // Decide turns
-            textPrinter.Print(printType, "Flipping the coin to decide who starts...");
+            textPrinter.Print("Flipping the coin to decide who starts...");
             int coinFlip = random.Next(1, 3);
             int roll = 0;
             // First turn
             if (coinFlip == 1)
             {
-                textPrinter.Print(printType, player1.Name + " starts!\n");
+                textPrinter.Print(player1.Name + " starts!\n");
                 // check the die the player wants to roll and roll it
                 string dieType = inputManager.ChooseDie(dieRoller, true);
                 roll = dieRoller.Roll(dieType);
@@ -115,8 +133,8 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             }
             else
             {
-                textPrinter.Print(printType, "The CPU starts!\n");
-                textPrinter.Print(printType, "The CPU is picking their die...");
+                textPrinter.Print("The CPU starts!\n");
+                textPrinter.Print("The CPU is picking their die...");
                 string dieType = inputManager.ChooseDie(dieRoller, false);
                 roll = dieRoller.Roll(dieType);
                 // Add the score
@@ -127,7 +145,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             if (coinFlip != 1) // If player 2 started, player 1 goes now
             {
                 // check the die the player wants to roll and roll it
-                textPrinter.Print(printType, "\nNow it's your turn!");
+                textPrinter.Print("\nNow it's your turn!");
                 string dieType = inputManager.ChooseDie(dieRoller, true);
                 roll = dieRoller.Roll(dieType);
                 // Add the score
@@ -135,7 +153,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             }
             else // If player 1 started, player 2 goes now
             {
-                textPrinter.Print(printType, "\nNow it's CPU's turn to pick their die...");
+                textPrinter.Print("\nNow it's CPU's turn to pick their die...");
                 string dieType = inputManager.ChooseDie(dieRoller, false);
                 roll = dieRoller.Roll(dieType);
                 // Add the score
@@ -144,15 +162,15 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
 
             if (player1.Score > playerCpu.Score)
             {
-                textPrinter.Print(printType, "\n" + player1.Name + " wins with a score of " + player1.Score + "! Congratulations!");
+                textPrinter.Print("\n" + player1.Name + " wins with a score of " + player1.Score + "! Congratulations!");
             }
             else if (player1.Score < playerCpu.Score)
             {
-                textPrinter.Print(printType, "\n The CPU wins with a score of " + playerCpu.Score + "! Better luck next time!");
+                textPrinter.Print("\n The CPU wins with a score of " + playerCpu.Score + "! Better luck next time!");
             }
             else
             {
-                textPrinter.Print(printType, "\nIt's a tie! Another round will start!");
+                textPrinter.Print("\nIt's a tie! Another round will start!");
                 Play(); // Start another round in case of a tie
             }
         }
