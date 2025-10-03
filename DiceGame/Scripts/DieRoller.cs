@@ -10,7 +10,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
     internal class DieRoller
     {
         private readonly Random random = new();
-        public int Roll(string dieType, TextPrinter textPrinter, bool isPlayer = true)
+        public int Roll(string dieType, TextPrinter textPrinter, bool isPlayer)
         {
             // Extract the maximum roll from the die type 
             int maxRoll = int.Parse(dieType[1..]);

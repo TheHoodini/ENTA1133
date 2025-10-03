@@ -208,7 +208,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             {
                 string summary = "";
                 // Create a CPU player
-                PlayerClass playerCpu = new PlayerClass("Dizarius");
+                PlayerClass playerCpu = new PlayerClass("Dizarius", false);
                 playerCpu.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
 
                 // Decide turns
@@ -244,7 +244,6 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                             Console.Write($"[{player1.Name.ToUpper()}] ");
                             cpuDie = Console.ReadLine();
                         }
-                        playerCpu.RemoveDie(cpuDie);
 
                         // Choose the die the player will roll
                         textPrinter.Print("Pick the die you will roll: " + string.Join(", ", player1.Dice));
@@ -256,14 +255,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                             Console.Write($"[{player1.Name.ToUpper()}] ");
                             yourDie = Console.ReadLine();
                         }
-                        player1.RemoveDie(yourDie);
 
                         Console.WriteLine("");
-                        player1.addScore(roller.Roll(yourDie, textPrinter));
-                        playerCpu.addScore(roller.Roll(cpuDie, textPrinter, false));
+                        player1.UseDie(yourDie, textPrinter);
+                        playerCpu.UseDie(cpuDie, textPrinter);
                         isPlayerTurn = false;
 
-                        textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and Dizarius with a score of {playerCpu.Score}]");
+                        textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and Dizarius \nwith a score of {playerCpu.Score}]");
                     }
                     else
                     {
@@ -272,20 +270,18 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                         string[] playerOptions = player1.Dice.ToArray();
                         string cpuChosenDie = playerOptions[random.Next(playerOptions.Length)];
                         textPrinter.Print($"\n[Dizarius has picked your die: {cpuChosenDie}]");
-                        player1.RemoveDie(cpuChosenDie);
 
                         // Choose the die Dizarius will roll
                         string[] cpuOptions = playerCpu.Dice.ToArray();
                         string cpuDie = cpuOptions[random.Next(cpuOptions.Length)];
                         textPrinter.Print($"[Dizarius has picked his own die: {cpuDie}]");
-                        playerCpu.RemoveDie(cpuDie);
 
                         Console.WriteLine("");
-                        playerCpu.addScore(roller.Roll(cpuDie, textPrinter, false));
-                        player1.addScore(roller.Roll(cpuChosenDie, textPrinter));
+                        player1.UseDie(cpuChosenDie, textPrinter);
+                        playerCpu.UseDie(cpuDie, textPrinter);
                         isPlayerTurn = true;
 
-                        textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and Dizarius with a score of {playerCpu.Score}]");
+                        textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and Dizarius \nwith a score of {playerCpu.Score}]");
                     }
                 }
 
@@ -302,14 +298,14 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                     summary += "It's a tie!\n";
                 }
 
+                summary += player1.Summary;
                 // Print the summary of the round
-                textPrinter.Dialogue("Summary", summary);
+                textPrinter.Dialogue("Stats Summary", summary);
 
                 // Ask if the player wants to play again
                 textPrinter.Dialogue("Dizarius", $"That was wonderful! An amazing duel! Do you wish to play again, {player1.Name}?");
                 textPrinter.Print("\n1. Yes\n2. No\n");
-                Console.Write($"[{player1.Name.ToUpper()}] ");
-                string playAgainOption = Console.ReadLine();
+                string playAgainOption;
                 do 
                 {
                     Console.Write($"[{player1.Name.ToUpper()}] ");
@@ -319,13 +315,20 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                         // Reset scores and dice for a new round
                         player1.Reset();
                         playerCpu.Reset();
-                        player1.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
+                        if (curseOfTheFrog)
+                        {
+                            player1.AddDice(new List<string> { "d7", "d7", "d7", "d7", "d7" });
+                        }
+                        else
+                        {
+                            player1.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
+                        }
                         playerCpu.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
                     }
                     else if (playAgainOption == "2")
                     {
                         wantsToPlay = false;
-                        textPrinter.Dialogue("Dizarius", "It was a pleasure playing with you, until next time!");
+                        textPrinter.Dialogue("Dizarius", "It was a pleasure playing with you, until we meet again!");
                     }
                     else
                     {
