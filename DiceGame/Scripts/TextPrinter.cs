@@ -35,9 +35,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             }
         }
 
-        public void Dialogue(string character, string text)
+        public void Dialogue(string character, string text, bool clearConsole = false)
         { 
-            Console.Clear();
+            if (clearConsole) { Console.Clear(); } else { Console.WriteLine("\n"); }
             const int dBoxWidth = 56; // Max characters per line
             string upperCharacter = character.ToUpper();
 
