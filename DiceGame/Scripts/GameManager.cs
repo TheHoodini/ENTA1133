@@ -165,7 +165,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                         }
                         else if (angerLevel == 1)
                         {
-                            textPrinter.Dialogue("Dizarius", "Are you paying attention, young person? Just type 1 or 2 to answer");
+                            textPrinter.Dialogue("Dizarius", $"Are you paying attention, {player1.Name}? Just type 1 or 2 to answer");
                         }
                         else if (angerLevel == 2)
                         {
@@ -203,106 +203,168 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
         public void Play()
         {
             var roller = new DieRoller();
-            string summary = "";
             bool wantsToPlay = true;
-            // Create a CPU player
-            PlayerClass playerCpu = new PlayerClass("Dizarius");
-            playerCpu.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
+            do 
+            {
+                string summary = "";
+                // Create a CPU player
+                PlayerClass playerCpu = new PlayerClass("Dizarius");
+                playerCpu.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
 
-            // Decide turns
-            textPrinter.Print("\n[Dizarius flips a coin to decide who starts...]");
-            int coinFlip = random.Next(1, 3);
-            bool isPlayerTurn;
-            if (coinFlip == 1)
-            {
-                textPrinter.Print("You start!");
-                isPlayerTurn = true;
-            }
-            else
-            {
-                textPrinter.Print("Dizarius starts!");
-                textPrinter.Dialogue("Dizarius", "It seems that luck is on my side again!");
-                isPlayerTurn = false;
-            }
-
-            // Start the turns
-            for (int i = 0; i < 2; i++)
-            {
-                textPrinter.Dialogue($"Round {i + 1}", "Start!");
-                if (isPlayerTurn)
+                // Decide turns
+                textPrinter.Print("\n[Dizarius flips a coin to decide who starts...]");
+                int coinFlip = random.Next(1, 3);
+                bool isPlayerTurn;
+                if (coinFlip == 1)
                 {
-                    // Player's turn
-                    // Choose the die Dizarius will roll
-                    textPrinter.Print("\nPick the die Dizarius will roll: " + string.Join(", ", playerCpu.Dice));
-                    Console.Write($"[{player1.Name.ToUpper()}] ");
-                    string cpuDie = Console.ReadLine();
-                    while (!playerCpu.Dice.Contains(cpuDie.ToLower()))
-                    {
-                        textPrinter.Print("Please type one of the options: " + string.Join(", ", playerCpu.Dice));
-                        Console.Write($"[{player1.Name.ToUpper()}] ");
-                        cpuDie = Console.ReadLine();
-                    }
-                    playerCpu.RemoveDie(cpuDie);
-
-                    // Choose the die the player will roll
-                    textPrinter.Print("Pick the die you will roll: " + string.Join(", ", player1.Dice));
-                    Console.Write($"[{player1.Name.ToUpper()}] ");
-                    string yourDie = Console.ReadLine();
-                    while (!player1.Dice.Contains(yourDie.ToLower()))
-                    {
-                        textPrinter.Print("Please type one of the options: " + string.Join(", ", player1.Dice));
-                        Console.Write($"[{player1.Name.ToUpper()}] ");
-                        yourDie = Console.ReadLine();
-                    }
-                    player1.RemoveDie(yourDie);
-
-                    Console.WriteLine("");
-                    player1.addScore(roller.Roll(yourDie, textPrinter));
-                    playerCpu.addScore(roller.Roll(cpuDie, textPrinter, false));
-                    isPlayerTurn = false;
-
-                    textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and Dizarius with a score of {playerCpu.Score}]");
+                    textPrinter.Print("You start!");
+                    isPlayerTurn = true;
                 }
                 else
                 {
-                    // CPU's turn
-                    // Choose the die the player will roll
-                    string[] playerOptions = player1.Dice.ToArray();
-                    string cpuChosenDie = playerOptions[random.Next(playerOptions.Length)];
-                    textPrinter.Print($"\n[Dizarius has picked your die: {cpuChosenDie}]");
-                    player1.RemoveDie(cpuChosenDie);
-
-                    // Choose the die Dizarius will roll
-                    string[] cpuOptions = playerCpu.Dice.ToArray();
-                    string cpuDie = cpuOptions[random.Next(cpuOptions.Length)];
-                    textPrinter.Print($"[Dizarius has picked his own die: {cpuDie}]");
-                    playerCpu.RemoveDie(cpuDie);
-
-                    Console.WriteLine("");
-                    playerCpu.addScore(roller.Roll(cpuDie, textPrinter, false));
-                    player1.addScore(roller.Roll(cpuChosenDie, textPrinter));
-                    isPlayerTurn = true;
-
-                    textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and Dizarius with a score of {playerCpu.Score}]");
+                    textPrinter.Print("Dizarius starts!");
+                    textPrinter.Dialogue("Dizarius", "It seems that luck is on my side again!");
+                    isPlayerTurn = false;
                 }
-            }
 
-            if (player1.Score > playerCpu.Score)
-            {
-                summary += $"Congratulations {player1.Name}, you won this round!\n";
-            }
-            else if (player1.Score < playerCpu.Score)
-            {
-                summary += "Dizarius won this round!\n";
-            }
-            else
-            {
-                summary += "It's a tie!\n";
-            }
-            // Print the summary of the round
-            textPrinter.Dialogue("Summary", summary);
+                // Start the turns
+                for (int i = 0; i < 2; i++)
+                {
+                    textPrinter.Dialogue($"Round {i + 1}", "Start!");
+                    if (isPlayerTurn)
+                    {
+                        // Player's turn
+                        // Choose the die Dizarius will roll
+                        textPrinter.Print("\nPick the die Dizarius will roll: " + string.Join(", ", playerCpu.Dice));
+                        Console.Write($"[{player1.Name.ToUpper()}] ");
+                        string cpuDie = Console.ReadLine();
+                        while (!playerCpu.Dice.Contains(cpuDie.ToLower()))
+                        {
+                            textPrinter.Print("Please type one of the options: " + string.Join(", ", playerCpu.Dice));
+                            Console.Write($"[{player1.Name.ToUpper()}] ");
+                            cpuDie = Console.ReadLine();
+                        }
+                        playerCpu.RemoveDie(cpuDie);
 
+                        // Choose the die the player will roll
+                        textPrinter.Print("Pick the die you will roll: " + string.Join(", ", player1.Dice));
+                        Console.Write($"[{player1.Name.ToUpper()}] ");
+                        string yourDie = Console.ReadLine();
+                        while (!player1.Dice.Contains(yourDie.ToLower()))
+                        {
+                            textPrinter.Print("Please type one of the options: " + string.Join(", ", player1.Dice));
+                            Console.Write($"[{player1.Name.ToUpper()}] ");
+                            yourDie = Console.ReadLine();
+                        }
+                        player1.RemoveDie(yourDie);
 
+                        Console.WriteLine("");
+                        player1.addScore(roller.Roll(yourDie, textPrinter));
+                        playerCpu.addScore(roller.Roll(cpuDie, textPrinter, false));
+                        isPlayerTurn = false;
+
+                        textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and Dizarius with a score of {playerCpu.Score}]");
+                    }
+                    else
+                    {
+                        // CPU's turn
+                        // Choose the die the player will roll
+                        string[] playerOptions = player1.Dice.ToArray();
+                        string cpuChosenDie = playerOptions[random.Next(playerOptions.Length)];
+                        textPrinter.Print($"\n[Dizarius has picked your die: {cpuChosenDie}]");
+                        player1.RemoveDie(cpuChosenDie);
+
+                        // Choose the die Dizarius will roll
+                        string[] cpuOptions = playerCpu.Dice.ToArray();
+                        string cpuDie = cpuOptions[random.Next(cpuOptions.Length)];
+                        textPrinter.Print($"[Dizarius has picked his own die: {cpuDie}]");
+                        playerCpu.RemoveDie(cpuDie);
+
+                        Console.WriteLine("");
+                        playerCpu.addScore(roller.Roll(cpuDie, textPrinter, false));
+                        player1.addScore(roller.Roll(cpuChosenDie, textPrinter));
+                        isPlayerTurn = true;
+
+                        textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and Dizarius with a score of {playerCpu.Score}]");
+                    }
+                }
+
+                if (player1.Score > playerCpu.Score)
+                {
+                    summary += $"Congratulations {player1.Name}, you won this round!\n";
+                }
+                else if (player1.Score < playerCpu.Score)
+                {
+                    summary += "Dizarius won this round!\n";
+                }
+                else
+                {
+                    summary += "It's a tie!\n";
+                }
+
+                // Print the summary of the round
+                textPrinter.Dialogue("Summary", summary);
+
+                // Ask if the player wants to play again
+                textPrinter.Dialogue("Dizarius", $"That was wonderful! An amazing duel! Do you wish to play again, {player1.Name}?");
+                textPrinter.Print("\n1. Yes\n2. No\n");
+                Console.Write($"[{player1.Name.ToUpper()}] ");
+                string playAgainOption = Console.ReadLine();
+                do 
+                {
+                    Console.Write($"[{player1.Name.ToUpper()}] ");
+                    playAgainOption = Console.ReadLine();
+                    if (playAgainOption == "1")
+                    {
+                        // Reset scores and dice for a new round
+                        player1.Reset();
+                        playerCpu.Reset();
+                        player1.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
+                        playerCpu.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
+                    }
+                    else if (playAgainOption == "2")
+                    {
+                        wantsToPlay = false;
+                        textPrinter.Dialogue("Dizarius", "It was a pleasure playing with you, until next time!");
+                    }
+                    else
+                    {
+                        // Increase anger level if the input is invalid
+                        if (!curseOfTheFrog)
+                        {
+                            string message = string.Empty;
+                            if (angerLevel == 0)
+                            {
+                                textPrinter.Dialogue("Dizarius", $"Take this seriously {player1.Name}, answer 1 if you want to play again or 2 if not");
+                            }
+                            else if (angerLevel == 1)
+                            {
+                                textPrinter.Dialogue("Dizarius", $"Are you paying attention, {player1.Name}? Just type 1 or 2 to answer");
+                            }
+                            else if (angerLevel == 2)
+                            {
+                                textPrinter.Dialogue("Dizarius", "This is getting ridiculous, I need a proper answer to proceed!");
+                            }
+                            else
+                            {
+                                CurseOfTheFrog();
+                                player1.Reset();
+                                playerCpu.Reset();
+                                playerCpu.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
+                                player1.AddDice(new List<string> { "d7", "d7", "d7", "d7", "d7" });
+                                break;
+                            }
+                            angerLevel++;
+                        }
+                        else
+                        {
+                            textPrinter.Dialogue("Dizarius", "...");
+                        }
+                    }
+                } while (playAgainOption != "1" && playAgainOption != "2");
+                
+            } while (wantsToPlay);
+            
         }
 
         public void CurseOfTheFrog()

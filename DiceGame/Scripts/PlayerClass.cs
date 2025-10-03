@@ -26,5 +26,11 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
         {
             dice.Remove(die);
         }
+
+        internal void Reset()
+        {
+            dice.Clear();
+            score = 0;
+        }
     }
 }
