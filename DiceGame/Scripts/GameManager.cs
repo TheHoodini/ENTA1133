@@ -46,10 +46,10 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                                 "             $$    $$/                                                                    \n" +
                                 "              $$$$$$/                                                                     \n\n");
             // Welcome the player
-            Console.WriteLine("                                     Press ENTER to start\n");
-            Console.ReadLine();
-            textPrinter.Dialogue("Dizarius", "Welcome young person, I'm Dizarius the dice wizard. " +
-                "Please tell me the type of text printer you desire (type the number):\n1. Typewriter Effect\n2. Regular Print", true);
+            Console.WriteLine("                                     Press any key to start\n");
+            Console.ReadKey();
+            textPrinter.Dialogue("Dizarius", "Welcome brave adventurer, I'm Dizarius the dice wizard. " +
+                "Before we start our recreation, please tell me the type of text printer you desire (type the number):\n1. Typewriter Effect\n2. Regular Print", true);
 
             // Ask for the type of text printer
             Console.Write("[YOU] ");
@@ -130,28 +130,28 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             }
             // Print rules
             textPrinter.Dialogue("Dizarius", rulesIntro +
-                    "1. First we flip a coin to decide the turn order\n" +
-                    "2. The first player picks the die the other player will roll and then the die they will roll\n" +
-                    "3. The second one picks the die of the first player and then their own die\n" +
+                    "1. First I flip a coin to decide the turn order, the game lasts 3 rounds\n" +
+                    "2. The first player picks the die they will roll and the die their oponent will roll\n" +
+                    "3. The next turn the other player picks their own roll and the die their oponent will roll\n" +
                     "4. The player with the highest score wins\n", true);
 
-            textPrinter.Print("\n[Are you ready to start?]\n1. Yes\n2. No\n");
+            textPrinter.Print("\n[Are you ready to start?]\n> Yes\n> No\n");
 
             // Ask if the player is ready to start
             bool isReady = false;
             do
             {
                 Console.Write($"[{player1.Name.ToUpper()}] ");
-                string readyOption = Console.ReadLine();
+                string readyOption = Console.ReadLine().ToLower();
 
-                if (readyOption == "1")
+                if (readyOption == "y" || readyOption == "yes")
                 {
                     isReady = true;
                 }
-                else if (readyOption == "2")
+                else if (readyOption == "n" || readyOption == "no")
                 {
                     textPrinter.Dialogue("Dizarius", "Patience is important, let me know when you're ready.");
-                    textPrinter.Print("\n[Are you ready now?]\n1. Yes\n2. No\n");
+                    textPrinter.Print("\n[Are you ready now?]\n> Yes\n> No\n");
                 }
                 else
                 {
@@ -161,11 +161,11 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                         string message = string.Empty;
                         if (angerLevel == 0)
                         {
-                            textPrinter.Dialogue("Dizarius", $"Take this seriously {player1.Name}, answer 1 if you're ready or 2 if not");
+                            textPrinter.Dialogue("Dizarius", $"Take this seriously {player1.Name}, answer if you're ready or not");
                         }
                         else if (angerLevel == 1)
                         {
-                            textPrinter.Dialogue("Dizarius", $"Are you paying attention, {player1.Name}? Just type 1 or 2 to answer");
+                            textPrinter.Dialogue("Dizarius", $"Are you paying attention, {player1.Name}? Just answer yes or no!");
                         }
                         else if (angerLevel == 2)
                         {
@@ -193,7 +193,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             }
             else
             {
-                textPrinter.Dialogue("Dizarius", $"Excellent {player1.Name}! Let's begin the Mystic Roll!");
+                textPrinter.Dialogue("Dizarius", $"Excellent {player1.Name}! Let's begin the Mystic Roll!", true);
                 player1.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
                 textPrinter.Print($"\n[Your inventory was filled with a " + string.Join(", ", player1.Dice) + "]");
             }
@@ -204,6 +204,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
         {
             var roller = new DieRoller();
             bool wantsToPlay = true;
+            int playerRoll;
+            int cpuRoll;
+            string tieMessage ="";
             do 
             {
                 string summary = "";
@@ -228,7 +231,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                 }
 
                 // Start the turns
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     textPrinter.Dialogue($"Round {i + 1}", "Start!");
                     if (isPlayerTurn)
@@ -237,31 +240,29 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                         // Choose the die Dizarius will roll
                         textPrinter.Print("\nPick the die Dizarius will roll: " + string.Join(", ", playerCpu.Dice));
                         Console.Write($"[{player1.Name.ToUpper()}] ");
-                        string cpuDie = Console.ReadLine();
-                        while (!playerCpu.Dice.Contains(cpuDie.ToLower()))
+                        string cpuDie = Console.ReadLine().ToLower();
+                        while (!playerCpu.Dice.Contains(cpuDie))
                         {
                             textPrinter.Print("Please type one of the options: " + string.Join(", ", playerCpu.Dice));
                             Console.Write($"[{player1.Name.ToUpper()}] ");
-                            cpuDie = Console.ReadLine();
+                            cpuDie = Console.ReadLine().ToLower();
                         }
 
                         // Choose the die the player will roll
                         textPrinter.Print("Pick the die you will roll: " + string.Join(", ", player1.Dice));
                         Console.Write($"[{player1.Name.ToUpper()}] ");
-                        string yourDie = Console.ReadLine();
-                        while (!player1.Dice.Contains(yourDie.ToLower()))
+                        string yourDie = Console.ReadLine().ToLower();
+                        while (!player1.Dice.Contains(yourDie))
                         {
                             textPrinter.Print("Please type one of the options: " + string.Join(", ", player1.Dice));
                             Console.Write($"[{player1.Name.ToUpper()}] ");
-                            yourDie = Console.ReadLine();
+                            yourDie = Console.ReadLine().ToLower();
                         }
 
                         Console.WriteLine("");
-                        player1.UseDie(yourDie, textPrinter);
-                        playerCpu.UseDie(cpuDie, textPrinter);
+                        playerRoll = player1.UseDie(yourDie, textPrinter);
+                        cpuRoll = playerCpu.UseDie(cpuDie, textPrinter);
                         isPlayerTurn = false;
-
-                        textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and Dizarius \nwith a score of {playerCpu.Score}]");
                     }
                     else
                     {
@@ -277,12 +278,26 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                         textPrinter.Print($"[Dizarius has picked his own die: {cpuDie}]");
 
                         Console.WriteLine("");
-                        player1.UseDie(cpuChosenDie, textPrinter);
-                        playerCpu.UseDie(cpuDie, textPrinter);
+                        cpuRoll = playerCpu.UseDie(cpuDie, textPrinter);
+                        playerRoll = player1.UseDie(cpuChosenDie, textPrinter);
                         isPlayerTurn = true;
-
-                        textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and Dizarius \nwith a score of {playerCpu.Score}]");
                     }
+                    if (playerRoll > cpuRoll)
+                    {
+                        player1.addScore(1);
+                    }
+                    else if (playerRoll < cpuRoll)
+                    {
+                        playerCpu.addScore(1);
+                    }
+                    else
+                    {
+                        tieMessage = "It's a tie, nobody gets points!\n";
+                    }
+                    textPrinter.Print($"\n{tieMessage}[The round ends with you having a score of {player1.Score} and Dizarius \nwith a score of {playerCpu.Score}]");
+                    textPrinter.Print("\n[Press any key to continue]");
+                    Console.ReadKey();
+                    tieMessage = "";
                 }
 
                 if (player1.Score > playerCpu.Score)
@@ -300,17 +315,17 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
 
                 summary += player1.Summary;
                 // Print the summary of the round
-                textPrinter.Dialogue("Stats Summary", summary);
+                textPrinter.Dialogue("Stats Summary", summary, true);
 
                 // Ask if the player wants to play again
                 textPrinter.Dialogue("Dizarius", $"That was wonderful! An amazing duel! Do you wish to play again, {player1.Name}?");
-                textPrinter.Print("\n1. Yes\n2. No\n");
+                textPrinter.Print("\n> Yes\n> No\n");
                 string playAgainOption;
                 do 
                 {
                     Console.Write($"[{player1.Name.ToUpper()}] ");
-                    playAgainOption = Console.ReadLine();
-                    if (playAgainOption == "1")
+                    playAgainOption = Console.ReadLine().ToLower();
+                    if (playAgainOption == "y" || playAgainOption == "yes")
                     {
                         // Reset scores and dice for a new round
                         player1.Reset();
@@ -325,7 +340,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                         }
                         playerCpu.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
                     }
-                    else if (playAgainOption == "2")
+                    else if (playAgainOption == "n" || playAgainOption == "no")
                     {
                         wantsToPlay = false;
                         textPrinter.Dialogue("Dizarius", "It was a pleasure playing with you, until we meet again!");
@@ -335,14 +350,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                         // Increase anger level if the input is invalid
                         if (!curseOfTheFrog)
                         {
-                            string message = string.Empty;
                             if (angerLevel == 0)
                             {
-                                textPrinter.Dialogue("Dizarius", $"Take this seriously {player1.Name}, answer 1 if you want to play again or 2 if not");
+                                textPrinter.Dialogue("Dizarius", $"Take this seriously {player1.Name}, tell me if you want to try again or not");
                             }
                             else if (angerLevel == 1)
                             {
-                                textPrinter.Dialogue("Dizarius", $"Are you paying attention, {player1.Name}? Just type 1 or 2 to answer");
+                                textPrinter.Dialogue("Dizarius", $"Are you paying attention, {player1.Name}? Just type yes or no to answer");
                             }
                             else if (angerLevel == 2)
                             {
@@ -364,7 +378,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                             textPrinter.Dialogue("Dizarius", "...");
                         }
                     }
-                } while (playAgainOption != "1" && playAgainOption != "2");
+                } while (playAgainOption != "yes" && playAgainOption != "y" && playAgainOption != "no" && playAgainOption != "n");
                 
             } while (wantsToPlay);
             
@@ -374,9 +388,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
         {
             curseOfTheFrog = true;
             textPrinter.Dialogue("Dizarius", "You have tested my patience too long... By my hand, you now bear the curse of the frog!");
-            textPrinter.Print("\n[You have received the curse of the frog. Your inventory \nwas filled with d7 dice]\n\nPress ENTER to continue");
+            textPrinter.Print("\n[You have received the curse of the frog. Your inventory \nwas filled with d7 dice]\n\nPress any key to continue");
             player1 = new PlayerClass("Frog");
-            Console.ReadLine();
+            Console.ReadKey();
         }
 
     }

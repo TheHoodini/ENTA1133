@@ -31,19 +31,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             dice.AddRange(diceToAdd);
         }
 
-        internal void UseDie(string die, TextPrinter printer)
+        internal int UseDie(string die, TextPrinter printer)
         {
-            if (!dice.Contains(die))
-            {
-                printer.Print($"You don't have a {die} to roll.");
-                return;
-            }
-
             // Roll the die
             int roll = dieRoller.Roll(die, printer, isPlayer);
             pastRolls.Add(roll);
             diceUsedHistory.Add(die);
-            addScore(roll);
+            //addScore(roll);
             dice.Remove(die);
 
             int total = pastRolls.Sum();
@@ -80,6 +74,8 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                       $"Your total score was {total}. {totalComment}\n" +
                       $"Your highest roll was {highest}.\n" +
                       $"You had {evens} even rolls and {odds} odd rolls.";
+
+            return roll;
         }
 
         internal void Reset()
