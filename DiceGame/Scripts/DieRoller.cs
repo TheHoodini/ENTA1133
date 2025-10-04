@@ -7,85 +7,36 @@ using System.Threading.Tasks;
 
 namespace GD14_1133_A1_JuanDiego_DiceGame
 {
-    internal class DieRoller(string textType)
+    internal class DieRoller
     {
-        Random random = new Random();
-        TextPrinter textPrinter = new TextPrinter();
-        bool isD4Available = true;
-        bool isD6Available = true;
-        bool isD8Available = true;
-        bool isD12Available = true;
-        bool isD20Available = true;
-
-        // Properties to check if a die is available
-        public bool IsD4Available => isD4Available;
-        public bool IsD6Available => isD6Available;
-        public bool IsD8Available => isD8Available;
-        public bool IsD12Available => isD12Available;
-        public bool IsD20Available => isD20Available;
-
-        public int Roll(string dieType)
+        private readonly Random random = new();
+        public int Roll(string dieType, TextPrinter textPrinter, bool isPlayer)
         {
-            int roll = 0;
-            int maxRoll = 0;
-            textPrinter.Print(textType, "Rolling the " + dieType + "...");
-            // Roll the selected die and mark it as unavailable
-            if (dieType == "d4")
-            {
-                maxRoll = 4;
-                roll = random.Next(1, 5);
-                isD4Available = false;
-            }
-            else if (dieType == "d6")
-            {
-                maxRoll = 6;
-                roll = random.Next(1, 7);
-                isD6Available = false;
-            }
-            else if (dieType == "d8")
-            {
-                maxRoll = 8;
-                roll = random.Next(1, 9);
-                isD8Available = false;
-            }
-            else if (dieType == "d12")
-            {
-                maxRoll = 12;
-                roll = random.Next(1, 13);
-                isD12Available = false;
-            }
-            else if (dieType == "d20")
-            {
-                maxRoll = 20;
-                roll = random.Next(1, 21);
-                isD20Available = false;
-            }
-            // Print result
-            textPrinter.Print(textType, "The " + dieType + " rolled a " + roll);
+            // Extract the maximum roll from the die type 
+            int maxRoll = int.Parse(dieType[1..]);
 
-            // Print callouts depeding on the roll
-            if (roll == maxRoll)
-            {
-                textPrinter.Print(textType, "Excellent, a maximum roll!!!");
-            }
-            else if (roll == 1)
-            {
-                textPrinter.Print(textType, "A critical fail...");
-            } 
-            else if (roll == (maxRoll / 2))
-            {
-                textPrinter.Print(textType, "Well, the average");
-            }
-            else if (roll > (maxRoll / 2))
-            {
-                textPrinter.Print(textType, "Above average!");
-            }
-            else if (roll < (maxRoll / 2) && roll > 1)
-            {
-                textPrinter.Print(textType, "Below average...");
-            }
+            // Generate a random roll between 1 and the max roll
+            int rollResult = random.Next(1, maxRoll + 1);
 
-            return roll;
+            string name;
+            if (isPlayer) { name = "You"; } else { name = "Dizarius"; }
+            textPrinter.Print($"{name} rolled a {dieType}... The result was a {rollResult}!");
+
+            // Comment based on roll
+            string comment = rollResult switch
+            {
+                int r when r == maxRoll => "Excellent, a maximum roll!!!",
+                1 => "A critical fail...",
+                int r when r == (maxRoll / 2) => "Well, the average",
+                int r when r > (maxRoll / 2) => "Above average!",
+                _ => "Below average..."
+            };
+
+            textPrinter.Print(comment);
+            return rollResult;
         }
     }
+
+
+
 }
