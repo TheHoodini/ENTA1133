@@ -46,11 +46,11 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
         }
 
         // Print the question again 
-        public static void OverwritePrompt(string message, int clearLines = 3)
+        public static void OverwritePrompt(string message, int clearLines = 3, string question = "\nWhat will you do? (north, south, east, west, inspect, inventory): ")
         {
             ClearLines(clearLines);
             Console.WriteLine($"{message}");
-            Console.Write("\nWhat will you do? (north, south, east, west, inspect): ");
+            Console.Write(question);
         }
 
         public static void PrintMap(Room[,] dungeon, Room playerRoom)
@@ -93,7 +93,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
             Console.WriteLine("MAP");
             PrintMap(dungeon, playerRoom);
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-            Console.Write($"\n\nWhat will you do? (north, south, east, west, inspect): ");
+            Console.Write($"\n\nWhat will you do? (north, south, east, west, inspect, inventory): ");
         }
 
         public static void RefreshDungeonGame()

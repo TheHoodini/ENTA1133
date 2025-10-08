@@ -37,7 +37,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
             Utilities.FullClear();
 
             // Print room sprite
-            Console.WriteLine(RoomSprites.GetSprite(this.Sprite));
+            Console.WriteLine(DungeonSprites.GetSprite(this.Sprite));
 
             if (!Visited)
             {

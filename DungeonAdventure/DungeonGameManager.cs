@@ -16,6 +16,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
         public static Room[,]? CurrentDungeon { get; private set; }
         public static Room? CurrentRoom { get; private set; }
         public static Player? CurrentPlayer { get; private set; }
+        int DungeonRows;
 
         public void StartMenu()
         {
@@ -35,7 +36,8 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                 int rows = rng.Next(3, 6);
                 int cols = rng.Next(3, 9);
 
-                player.TakeDamage(67); // test damage
+                player.TakeDamage(67); // test
+
                 player.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
                 var dungeon = DungeonMaker.GenerateDungeon(rows, cols);
 
@@ -44,10 +46,12 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                 int startCol = rng.Next(cols);
                 Room startRoom = dungeon[startRow, startCol];
 
-                // Store static references ONCE
+                // Store 
                 CurrentDungeon = dungeon;
                 CurrentRoom = startRoom;
                 CurrentPlayer = player;
+
+                DungeonRows = rows;
             }
 
             // Continue game from last known position
@@ -88,6 +92,11 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                     case "inspect":
                     case "ins":
                         currentRoom.OnRoomSearched(playerRef);
+                        break;
+
+                    case "inventory":
+                    case "inv":
+                        playerRef.OpenInventory();
                         break;
 
                     case "quit":

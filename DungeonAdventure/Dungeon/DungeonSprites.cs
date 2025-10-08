@@ -6,15 +6,16 @@ using System.Threading.Tasks;
 
 namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
 {
-    public static class RoomSprites
+    public static class DungeonSprites
     {
-        public static string GetSprite(string roomSprite)
+        public static string GetSprite(string sprite)
         {
-            return roomSprite switch
+            return sprite switch
             {
                 "spE" => RoomEmpty(),
                 "spT" => RoomTreasure(),
                 "spC" => RoomCombat(),
+                "uiI" => UiInventory(),
                 _ => RoomEmpty()
             };
         }
@@ -105,6 +106,38 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                 @"║/______/______/______/______/_____""=.o|o_.--""""___/______/______/___║",
                 @"║___/______/______/______/______/______/______/______/______/______/║",
                 @"╚═══════════════════════════════════════════════════════════════════╝"
+
+            });
+            return roomSprite;
+        }
+
+        private static string UiInventory()
+        {
+            string roomSprite = string.Join("\n", new string[]
+            {
+                    @"╔═══════════════════════════════════════════════════════════════════╗",
+                    @"║                                                                   ║",
+                    @"║                                                                   ║",
+                    @"║                      _....._                                      ║",
+                    @"║                     ';-.--';'                                     ║",
+                    @"║                      }===={       _.---.._                        ║",
+                    @"║                    .'      '.    ';-..--';                        ║",
+                    @"║                   /::        \    `}===={                         ║",
+                    @"║                  |::          :   '      '.                       ║",
+                    @"║                  \::.        _.---_        \                      ║",
+                    @"║                   '::_     _`---..-';       |                     ║",
+                    @"║                       `````  }====={        /                     ║",
+                    @"║                            .'       '.   _.'                      ║",
+                    @"║                           /::         \ `                         ║",
+                    @"║                          |::           |                          ║",
+                    @"║                          \::.          /                          ║",
+                    @"║                           '::_      _.'                           ║",
+                    @"║                               ``````                              ║",
+                    @"║                                                                   ║",
+                    @"║                                                                   ║",
+                    @"║                                                                   ║",
+                    @"╚═══════════════════════════════════════════════════════════════════╝"
+
 
             });
             return roomSprite;

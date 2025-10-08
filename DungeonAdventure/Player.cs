@@ -1,4 +1,5 @@
-﻿using GD14_1133_A1_JuanDiego_DiceGame.Tools;
+﻿using GD14_1133_A1_JuanDiego_DiceGame.Dungeon;
+using GD14_1133_A1_JuanDiego_DiceGame.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,8 +48,28 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
 
         internal void TakeDamage(int damage)
         {
-            HP -= damage;
-            if (HP < 0) HP = 0;
+            hp -= damage;
+            if (hp < 0) hp = 0;
+        }
+
+        internal void OpenInventory()
+        {
+            Utilities.FullClear();
+            Console.WriteLine(DungeonSprites.GetSprite("uiI"));
+            Console.WriteLine("                              INVENTORY");
+            Console.WriteLine("═════════════════════════════════════════════════════════════════════");
+            Console.WriteLine($"Player: {name}");
+            Console.WriteLine($"HP: {hp}/100");
+            Console.WriteLine("Dice: " + (dice.Count > 0 ? string.Join(", ", dice) : "None"));
+            Console.WriteLine("═════════════════════════════════════════════════════════════════════");
+            Console.Write($"\n\nWhat will you do? (close): ");
+            string input = Console.ReadLine()?.ToLower() ?? "";
+            while (input != "close" && input != "c")
+            {
+                Utilities.OverwritePrompt($"Invalid command '{input}'. Type 'close' to exit inventory.", question: "\nWhat will you do? (close): ");
+                input = Console.ReadLine()?.ToLower() ?? "";
+            }
+            Utilities.RefreshDungeonGame();
         }
 
         internal void UseDie(string die, TextPrinter printer)
