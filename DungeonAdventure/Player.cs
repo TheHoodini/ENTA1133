@@ -1,0 +1,115 @@
+﻿using GD14_1133_A1_JuanDiego_DiceGame.Tools;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GD14_1133_A1_JuanDiego_DiceGame
+{
+    public class Player(string playerName, bool isPlayer = true)
+    {
+        // Player attributes
+        private string name = playerName;
+        private int score = 0;
+        private List<string> dice = new();
+        private string summary = "";
+        private int hp = 100;
+
+        private readonly DieRoller dieRoller = new();
+        private List<int> pastRolls = new(); // Track all roll results
+        private List<string> diceUsedHistory = new(); // Track the types of dice used
+
+        public int HP
+        {
+            get { return hp; }
+            set { hp = Math.Clamp(value, 0, 100); }
+        }
+        public string Name => name;
+        public int Score => score;
+        public string Summary => summary;
+        internal List<string> Dice => new List<string>(dice);
+
+        internal void ChangeName(string newName)
+        {
+            name = newName;
+        }
+
+        internal void addScore(int points)
+        {
+            score += points;
+        }
+
+        internal void AddDice(IEnumerable<string> diceToAdd)
+        {
+            dice.AddRange(diceToAdd);
+        }
+
+        internal void TakeDamage(int damage)
+        {
+            HP -= damage;
+            if (HP < 0) HP = 0;
+        }
+
+        internal void UseDie(string die, TextPrinter printer)
+        {
+            if (!dice.Contains(die))
+            {
+                printer.Print($"You don't have a {die} to roll.");
+                return;
+            }
+
+            // Roll the die
+            int roll = dieRoller.Roll(die, printer, isPlayer);
+            pastRolls.Add(roll);
+            diceUsedHistory.Add(die);
+            addScore(roll);
+            dice.Remove(die);
+
+            int total = pastRolls.Sum();
+            int highest = pastRolls.Max();
+            int evens = pastRolls.Count(r => r % 2 == 0);
+            int odds = pastRolls.Count - evens;
+
+            // Calculate expected average total
+            int expectedTotal = 0;
+            foreach (var usedDie in pastRolls.Zip(diceUsedHistory, (rollValue, dieType) => dieType))
+            {
+                if (int.TryParse(usedDie[1..], out int sides))
+                {
+                    expectedTotal += (int)Math.Round((sides + 1) / 2.0);
+                }
+            }
+
+            // Comment based on total vs expected
+            string totalComment;
+            if (total < expectedTotal)
+            {
+                totalComment = "That was the best you got?";
+            }
+            else if (total > expectedTotal)
+            {
+                totalComment = "You're truly a dice master!";
+            }
+            else
+            {
+                totalComment = "Not bad!";
+            }
+
+            summary = $"You rolled {pastRolls.Count} dice in total.\n" +
+                      $"Your total score was {total}. {totalComment}\n" +
+                      $"Your highest roll was {highest}.\n" +
+                      $"You had {evens} even rolls and {odds} odd rolls.";
+        }
+
+        internal void Reset()
+        {
+            dice.Clear();
+            score = 0;
+            summary = "";
+            pastRolls.Clear();
+            diceUsedHistory.Clear();
+        }
+    }
+
+}

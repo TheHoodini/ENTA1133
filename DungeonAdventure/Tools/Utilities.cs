@@ -1,0 +1,99 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using GD14_1133_A1_JuanDiego_DiceGame.Dungeon; // Needed for Room
+using GD14_1133_A1_JuanDiego_DiceGame.Tools;   // In case of cross-refs like Player
+
+namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
+{
+    public static class Utilities
+    {
+        // Fully clear the console
+        public static void FullClear()
+        {
+            int width = Console.BufferWidth;
+            int height = Console.BufferHeight;
+
+            string blankLine = new string(' ', width);
+
+            for (int i = 0; i < height; i++)
+            {
+                Console.SetCursorPosition(0, i);
+                Console.Write(blankLine);
+            }
+
+            Console.SetCursorPosition(0, 0);
+        }
+
+        // Clear n lines above in the console
+        public static void ClearLines(int n)
+        {
+            int currentLine = Console.CursorTop;
+
+            for (int i = 1; i <= n; i++)
+            {
+                int lineToClear = currentLine - i;
+                if (lineToClear < 0)
+                    break;
+
+                Console.SetCursorPosition(0, lineToClear);
+                Console.Write(new string(' ', Console.WindowWidth));
+            }
+
+            Console.SetCursorPosition(0, currentLine - n);
+        }
+
+        // Print the question again 
+        public static void OverwritePrompt(string message)
+        {
+            ClearLines(3);
+            Console.WriteLine($"{message}");
+            Console.Write("\nWhat will you do? (north, south, east, west, inspect): ");
+        }
+
+        public static void PrintMap(Room[,] dungeon, Room playerRoom)
+        {
+            int rows = dungeon.GetLength(0);
+            int cols = dungeon.GetLength(1);
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
+                {
+                    Room r = dungeon[i, j];
+                    if (r == playerRoom)
+                    {
+                        Console.Write("[■]");
+                    }
+                    else if (r.Visited)
+                    {
+                        Console.Write($"[{r.MapSymbol()}]");
+                    }
+                    else
+                    {
+                        Console.Write("[ ]");
+                    }
+                }
+                Console.WriteLine();
+            }
+        }
+
+        public static void PrintDungeonUI(Room[,] dungeon, Room playerRoom, Player player)
+        {
+            string hpBar = "";
+            int NumHpBars = 15;
+            int maxHp = 100;
+            int filledBars = (int)Math.Ceiling((player.HP / (double)maxHp) * NumHpBars);
+            hpBar = new string('█', filledBars) + new string('░', NumHpBars - filledBars);
+
+            Console.WriteLine("═════════════════════════════════════════════════════════════════════");
+            Console.WriteLine($"HP ({player.HP}/{maxHp}) {hpBar}");
+            Console.WriteLine("MAP");
+            PrintMap(dungeon, playerRoom);
+            Console.WriteLine("═════════════════════════════════════════════════════════════════════");
+            Console.Write($"\n\nWhat will you do? (north, south, east, west, inspect): ");
+        }
+    }
+}
