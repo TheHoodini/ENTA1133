@@ -10,7 +10,12 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
 {
     internal class DungeonGameManager
     {
-        Player player = new Player("Hero");
+        private Player player = new Player("Hero");
+
+        // Static global references for RefreshDungeonGame
+        public static Room[,]? CurrentDungeon { get; private set; }
+        public static Room? CurrentRoom { get; private set; }
+        public static Player? CurrentPlayer { get; private set; }
 
         public void StartMenu()
         {
@@ -23,78 +28,66 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
 
         public void StartGame()
         {
-            Random rng = new Random();
+            // Only generate a new dungeon if it doesn’t exist already
+            if (CurrentDungeon == null || CurrentPlayer == null)
+            {
+                Random rng = new Random();
+                int rows = rng.Next(3, 6);
+                int cols = rng.Next(3, 9);
 
-            int rows = rng.Next(3, 6);
-            int cols = rng.Next(3, 9);
+                player.TakeDamage(67); // test damage
+                player.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
+                var dungeon = DungeonMaker.GenerateDungeon(rows, cols);
 
-            player.TakeDamage(67);
-            var dungeon = DungeonMaker.GenerateDungeon(rows, cols);
+                // Random starting position
+                int startRow = rng.Next(rows);
+                int startCol = rng.Next(cols);
+                Room startRoom = dungeon[startRow, startCol];
 
-            // random starting position
-            int startRow = rng.Next(rows);
-            int startCol = rng.Next(cols);
-            Room currentRoom = dungeon[startRow, startCol];
+                // Store static references ONCE
+                CurrentDungeon = dungeon;
+                CurrentRoom = startRoom;
+                CurrentPlayer = player;
+            }
 
-            currentRoom.OnRoomEntered(dungeon, currentRoom, player);
+            // Continue game from last known position
+            Room currentRoom = CurrentRoom!;
+            Room[,] dungeonRef = CurrentDungeon!;
+            Player playerRef = CurrentPlayer!;
+
+            currentRoom.OnRoomEntered(dungeonRef, currentRoom, playerRef);
 
             bool playing = true;
-
-            // Enable for the console to display special characters
             Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             while (playing)
             {
-                string input = Console.ReadLine().ToLower();
+                string input = Console.ReadLine()?.ToLower() ?? "";
                 switch (input)
                 {
                     case "north":
                     case "n":
-                        if (currentRoom.North != null)
-                        {
-                            currentRoom.OnRoomExit();
-                            currentRoom = currentRoom.North;
-                            currentRoom.OnRoomEntered(dungeon, currentRoom, player);
-                        }
-                        else Utilities.OverwritePrompt("You can’t go north.");
+                        MoveTo(currentRoom.North, ref currentRoom, dungeonRef, playerRef, "north");
                         break;
 
                     case "south":
                     case "s":
-                        if (currentRoom.South != null)
-                        {
-                            currentRoom.OnRoomExit();
-                            currentRoom = currentRoom.South;
-                            currentRoom.OnRoomEntered(dungeon, currentRoom, player);
-                        }
-                        else Utilities.OverwritePrompt("You can’t go south.");
+                        MoveTo(currentRoom.South, ref currentRoom, dungeonRef, playerRef, "south");
                         break;
 
                     case "east":
                     case "e":
-                        if (currentRoom.East != null)
-                        {
-                            currentRoom.OnRoomExit();
-                            currentRoom = currentRoom.East;
-                            currentRoom.OnRoomEntered(dungeon, currentRoom, player);
-                        }
-                        else Utilities.OverwritePrompt("You can’t go east.");
+                        MoveTo(currentRoom.East, ref currentRoom, dungeonRef, playerRef, "east");
                         break;
 
                     case "west":
                     case "w":
-                        if (currentRoom.West != null)
-                        {
-                            currentRoom.OnRoomExit();
-                            currentRoom = currentRoom.West;
-                            currentRoom.OnRoomEntered(dungeon, currentRoom, player);
-                        }
-                        else Utilities.OverwritePrompt("You can’t go west.");
+                        MoveTo(currentRoom.West, ref currentRoom, dungeonRef, playerRef, "west");
                         break;
 
                     case "inspect":
                     case "ins":
-                        currentRoom.OnRoomSearched(player);
+                        currentRoom.OnRoomSearched(playerRef);
                         break;
 
                     case "quit":
@@ -109,7 +102,21 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
             }
         }
 
-
+        private void MoveTo(Room? target, ref Room currentRoom, Room[,] dungeon, Player player, string direction)
+        {
+            if (target != null)
+            {
+                string exitMsg = currentRoom.OnRoomExit();
+                currentRoom = target;
+                CurrentRoom = currentRoom; 
+                currentRoom.OnRoomEntered(dungeon, currentRoom, player, exitMsg);
+            }
+            else
+            {
+                Utilities.OverwritePrompt($"You can’t go {direction}.");
+            }
+        }
     }
+
 
 }

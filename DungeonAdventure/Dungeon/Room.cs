@@ -31,7 +31,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
             Sprite = sprite;
         }
 
-        public virtual void OnRoomEntered(Room[,] dungeon, Room playerRoom, Player player)
+        public virtual void OnRoomEntered(Room[,] dungeon, Room playerRoom, Player player, string exitMsg = "")
         {
             // -------------------------------------------------------- Dungeon Game UI --------------------------------------------------------
             Utilities.FullClear();
@@ -41,12 +41,12 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
 
             if (!Visited)
             {
-                Console.WriteLine($"You enter room #{Index + 1}: {RoomDescription()}");
+                Console.WriteLine($"{exitMsg}You enter room #{Index + 1}: {RoomDescription()}");
                 Visited = true;
             }
             else
             {
-                Console.WriteLine($"You return to room #{Index + 1}. {RoomDescription()}");
+                Console.WriteLine($"{exitMsg}You return to room #{Index + 1}. {RoomDescription()}");
             }
 
             Utilities.PrintDungeonUI(dungeon, playerRoom, player);
@@ -55,9 +55,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
         public abstract string RoomDescription();
         public abstract void OnRoomSearched(Player player);
 
-        public virtual void OnRoomExit()
+        public virtual string OnRoomExit()
         {
-            Console.WriteLine($"You leave room {Index}...");
+            return $"You left room #{Index + 1}.\n";
         }
 
         public abstract string MapSymbol();
@@ -89,7 +89,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
         {
             return HasTreasure
                 ? "You found a treasure!"
-                : "It used to be a trasure here";
+                : "There used to be a treasure here";
         }
 
         public override void OnRoomSearched(Player player)
@@ -100,12 +100,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                 searchMessage = "You search the room and find a gem!";
                 HasTreasure = false;
                 Sprite = "spE";
+                Utilities.FullClear();
+                Utilities.RefreshDungeonGame();
             }
             else
             {
                 searchMessage = "You already took the treasure. Nothing remains here.";
             }
-            Utilities.OverwritePrompt(searchMessage);
         }
 
         public override string MapSymbol() => HasTreasure ? "T" : " ";
@@ -125,10 +126,19 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
 
         public override void OnRoomSearched(Player player)
         {
-            //Utilities.OverwritePrompt("Searching here feels dangerous. There are enemies around!");
-            DiceGameManager diceGame = new(player);
-            Utilities.FullClear();
-            diceGame.Play();
+            if (HasCombat)
+            {
+                DiceGameManager diceGame = new(player);
+                Utilities.FullClear();
+                Sprite = "spE";
+                HasCombat = diceGame.Play();
+                Utilities.RefreshDungeonGame();
+            }
+            else
+            {
+                Utilities.OverwritePrompt("You already defeated the enemy here. The room is safe now.");
+            }
+
         }
 
         public override string MapSymbol() => HasCombat ? "C" : " ";

@@ -46,9 +46,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
         }
 
         // Print the question again 
-        public static void OverwritePrompt(string message)
+        public static void OverwritePrompt(string message, int clearLines = 3)
         {
-            ClearLines(3);
+            ClearLines(clearLines);
             Console.WriteLine($"{message}");
             Console.Write("\nWhat will you do? (north, south, east, west, inspect): ");
         }
@@ -95,5 +95,22 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
             Console.Write($"\n\nWhat will you do? (north, south, east, west, inspect): ");
         }
+
+        public static void RefreshDungeonGame()
+        {
+            var dungeon = DungeonGameManager.CurrentDungeon;
+            var current = DungeonGameManager.CurrentRoom;
+            var player = DungeonGameManager.CurrentPlayer;
+
+            if (dungeon == null || current == null || player == null)
+            {
+                Console.WriteLine("dungeon not initialized");
+                return;
+            }
+
+            FullClear();
+            current.OnRoomEntered(dungeon, current, player);
+        }
+
     }
 }

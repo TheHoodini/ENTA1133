@@ -200,7 +200,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
         }
 
         // ------------------- Start a game round -------------------
-        public void Play()
+        public bool Play()
         {
             var roller = new DieRoller();
             bool wantsToPlay = true;
@@ -304,13 +304,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
 
                 // Ask if the player wants to play again
                 textPrinter.Dialogue("Dizarius", $"That was wonderful! An amazing duel! Do you wish to play again, {player1.Name}?");
-                textPrinter.Print("\n1. Yes\n2. No\n");
+                textPrinter.Print("\n> Yes\n> No\n");
                 string playAgainOption;
                 do 
                 {
                     Console.Write($"[{player1.Name.ToUpper()}] ");
-                    playAgainOption = Console.ReadLine();
-                    if (playAgainOption == "1")
+                    playAgainOption = Console.ReadLine().ToLower();
+                    if (playAgainOption == "y" || playAgainOption == "yes")
                     {
                         // Reset scores and dice for a new round
                         player1.Reset();
@@ -325,7 +325,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                         }
                         playerCpu.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
                     }
-                    else if (playAgainOption == "2")
+                    else if (playAgainOption == "n" || playAgainOption == "no")
                     {
                         wantsToPlay = false;
                         textPrinter.Dialogue("Dizarius", "It was a pleasure playing with you, until we meet again!");
@@ -364,10 +364,12 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                             textPrinter.Dialogue("Dizarius", "...");
                         }
                     }
-                } while (playAgainOption != "1" && playAgainOption != "2");
-                
+                } while (playAgainOption != "yes" && playAgainOption != "y" && playAgainOption != "no" && playAgainOption != "n");
+
             } while (wantsToPlay);
-            // end game
+
+            // End game and set HasCombat to false
+            return false;
         }
 
         public void CurseOfTheFrog()
