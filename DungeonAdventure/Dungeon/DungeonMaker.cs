@@ -18,9 +18,10 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
             // ------------------- Room Probabilities -------------------
             var roomChances = new Dictionary<string, int>
             {
-                { "e", 60 }, // Empty 50%
-                { "t", 20 }, // Treasure 30%
-                { "c", 20 }  // Combat 20%
+                { "e", 60 }, // Empty 
+                { "t", 20 }, // Treasure 
+                { "c", 10 },  // Combat 
+                { "tt", 10 }, // Trap 
             };
 
             // Create rooms
@@ -34,6 +35,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                         "e" => new RoomEmpty(index, i, j),
                         "t" => new RoomTreasure(index, i, j),
                         "c" => new RoomCombat(index, i, j),
+                        "tt" => new RoomTrap(index, i, j),
                         _ => new RoomEmpty(index, i, j)
                     };
                     dungeon[i, j] = r;

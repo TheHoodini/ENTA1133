@@ -13,18 +13,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
         // Fully clear the console
         public static void FullClear()
         {
-            int width = Console.BufferWidth;
-            int height = Console.BufferHeight;
-
-            string blankLine = new string(' ', width);
-
-            for (int i = 0; i < height; i++)
-            {
-                Console.SetCursorPosition(0, i);
-                Console.Write(blankLine);
-            }
-
-            Console.SetCursorPosition(0, 0);
+            Console.Clear();
+            Console.WriteLine("\x1b[3J");
+            Console.Clear();
         }
 
         // Clear n lines above in the console
@@ -46,7 +37,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
         }
 
         // Print the question again 
-        public static void OverwritePrompt(string message, int clearLines = 3, string question = "\nWhat will you do? (north, south, east, west, inspect, inventory): ")
+        public static void OverwritePrompt(string message, int clearLines = 4, string question = "\nWhat will you do? (north, south, east, west, check, inventory):\n>")
         {
             ClearLines(clearLines);
             Console.WriteLine($"{message}");
@@ -93,7 +84,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
             Console.WriteLine("MAP");
             PrintMap(dungeon, playerRoom);
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-            Console.Write($"\n\nWhat will you do? (north, south, east, west, inspect, inventory): ");
+            Console.Write($"\n\nWhat will you do? (north, south, east, west, check, inventory):\n>");
         }
 
         public static void RefreshDungeonGame()

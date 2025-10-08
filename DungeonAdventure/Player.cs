@@ -62,11 +62,11 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
             Console.WriteLine($"HP: {hp}/100");
             Console.WriteLine("Dice: " + (dice.Count > 0 ? string.Join(", ", dice) : "None"));
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-            Console.Write($"\n\nWhat will you do? (close): ");
+            Console.Write($"\n\nWhat will you do? (close):\n>");
             string input = Console.ReadLine()?.ToLower() ?? "";
             while (input != "close" && input != "c")
             {
-                Utilities.OverwritePrompt($"Invalid command '{input}'. Type 'close' to exit inventory.", question: "\nWhat will you do? (close): ");
+                Utilities.OverwritePrompt($"Invalid command '{input}'. Type 'close' to exit inventory.", question: "\nWhat will you do? (close):\n>");
                 input = Console.ReadLine()?.ToLower() ?? "";
             }
             Utilities.RefreshDungeonGame();
@@ -125,7 +125,6 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
 
         internal void Reset()
         {
-            dice.Clear();
             score = 0;
             summary = "";
             pastRolls.Clear();

@@ -36,7 +36,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                 int rows = rng.Next(3, 6);
                 int cols = rng.Next(3, 9);
 
-                player.TakeDamage(67); // test
+                player.TakeDamage(0); // damage test
 
                 player.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
                 var dungeon = DungeonMaker.GenerateDungeon(rows, cols);
@@ -89,13 +89,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                         MoveTo(currentRoom.West, ref currentRoom, dungeonRef, playerRef, "west");
                         break;
 
-                    case "inspect":
-                    case "ins":
+                    case "check":
+                    case "c":
                         currentRoom.OnRoomSearched(playerRef);
                         break;
 
                     case "inventory":
-                    case "inv":
+                    case "i":
                         playerRef.OpenInventory();
                         break;
 

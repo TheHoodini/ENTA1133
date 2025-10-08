@@ -95,9 +95,22 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
         public override void OnRoomSearched(Player player)
         {
             string searchMessage;
+            int clearLines = HasTreasure ? 3 : 4;
+            Random rng = new Random();
             if (HasTreasure)
             {
-                searchMessage = "You search the room and find a gem!";
+                int coinflip = rng.Next(0, 2);
+                string die;
+                if (coinflip == 0)
+                {
+                    die = "d" + rng.Next(20, 31);
+                }
+                else
+                {
+                    die = "d" + rng.Next(1, 21);
+                }
+                player.AddDice(new List<string> { die });
+                searchMessage = $"You search the room and find a {die} die!";
                 HasTreasure = false;
                 Sprite = "spE";
                 Utilities.FullClear();
@@ -107,6 +120,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
             {
                 searchMessage = "You already took the treasure. Nothing remains here.";
             }
+            Utilities.OverwritePrompt(searchMessage, clearLines);
         }
 
         public override string MapSymbol() => HasTreasure ? "T" : " ";
@@ -130,8 +144,10 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
             {
                 DiceGameManager diceGame = new(player);
                 Utilities.FullClear();
-                Sprite = "spE";
                 HasCombat = diceGame.Play();
+                if (!HasCombat) {
+                    Sprite = "spE";
+                }
                 Utilities.RefreshDungeonGame();
             }
             else
@@ -142,6 +158,31 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
         }
 
         public override string MapSymbol() => HasCombat ? "C" : " ";
+    }
+
+    public class RoomTrap : Room
+    {
+        private bool HasBeenSearched = false;
+
+        public RoomTrap(int index, int row, int col) : base(index, row, col, "spT") { }
+
+        public override string RoomDescription()
+        {
+            return HasBeenSearched
+                ? "Be careful, something feels wrong here"
+                : "You found a treasure!";
+        }
+
+        public override void OnRoomSearched(Player player)
+        {
+            HasBeenSearched = true;
+            Utilities.FullClear();
+            player.TakeDamage(5);
+            Utilities.RefreshDungeonGame();
+            Utilities.OverwritePrompt("You tried to search... But you found a trap! you received 5 damage", 3);
+        }
+
+        public override string MapSymbol() => "t";
     }
 
 

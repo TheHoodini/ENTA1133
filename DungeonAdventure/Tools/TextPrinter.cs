@@ -24,10 +24,10 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
                 foreach (char c in text)
                 {
                     Console.Write(c);
-                    Thread.Sleep(20);
+                    Thread.Sleep(10);
                 }
                 Console.WriteLine();
-                Thread.Sleep(200);
+                Thread.Sleep(100);
             }
             else
             {
@@ -38,28 +38,15 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
         public void Dialogue(string character, string text, bool clearConsole = false)
         { 
             if (clearConsole) { Console.Clear(); } else { Console.WriteLine("\n"); }
-            const int dBoxWidth = 56; 
+            const int dBoxWidth = 69; 
             string upperCharacter = character.ToUpper();
 
             // Centered top line
-            string topLine = new string('=', 28 - upperCharacter.Length / 2);
-            Console.WriteLine($"{topLine}[{upperCharacter}]{topLine}");
+            string topLine = new string('═', 34 - upperCharacter.Length / 2);
+            Console.WriteLine($"{topLine}╣{upperCharacter}╠{topLine}");
 
             // Prepare wrapped lines
             List<string> wrappedLines = WrapText(text, dBoxWidth);
-
-            // Print blank lines to reserve space
-            foreach (var _ in wrappedLines)
-            {
-                Console.WriteLine();
-            }
-
-            // Draw bottom line
-            Console.WriteLine(new string('=', dBoxWidth + 2));
-
-            // Move cursor back up to start printing lines
-            int currentLine = Console.CursorTop;
-            Console.SetCursorPosition(0, currentLine - wrappedLines.Count - 1);
 
             // Print each wrapped line using animation
             foreach (string line in wrappedLines)
@@ -67,8 +54,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
                 Print(line);
             }
 
-            // Reset cursor to below the dialogue box
-            Console.SetCursorPosition(0, currentLine);
+            // Draw bottom line
+            Console.WriteLine(new string('═', dBoxWidth + 2));
+
         }
 
         // Helper method to wrap text into lines to fit within a specified width

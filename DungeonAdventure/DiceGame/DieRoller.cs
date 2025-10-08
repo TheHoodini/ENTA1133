@@ -19,7 +19,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
             int rollResult = random.Next(1, maxRoll + 1);
 
             string name;
-            if (isPlayer) { name = "You"; } else { name = "Dizarius"; }
+            if (isPlayer) { name = "You"; } else { name = "ENEMY"; }
             textPrinter.Print($"{name} rolled a {dieType}... The result was a {rollResult}!");
 
             // Comment based on roll
