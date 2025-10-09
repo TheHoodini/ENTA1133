@@ -3,10 +3,11 @@ using GD14_1133_A1_JuanDiego_DiceGame.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GD14_1133_A1_JuanDiego_DiceGame
+namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
 {
     public class Player(string playerName, bool isPlayer = true)
     {
@@ -51,12 +52,16 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
             hp -= damage;
             if (hp < 0) hp = 0;
         }
+        internal void Heal(int amount)
+        {
+            hp += amount;
+        }
 
         internal void OpenInventory()
         {
             Utilities.FullClear();
-            Console.WriteLine(DungeonSprites.GetSprite("uiI"));
-            Console.WriteLine("                              INVENTORY");
+            Console.WriteLine(DungeonSprites.GetSprite("uiInv"));
+            Console.WriteLine("                            INVENTORY");
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
             Console.WriteLine($"Player: {name}");
             Console.WriteLine($"HP: {hp}/100");
@@ -72,19 +77,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
             Utilities.RefreshDungeonGame();
         }
 
-        internal void UseDie(string die, TextPrinter printer)
+        internal int UseDie(string die, TextPrinter printer)
         {
-            if (!dice.Contains(die))
-            {
-                printer.Print($"You don't have a {die} to roll.");
-                return;
-            }
-
             // Roll the die
             int roll = dieRoller.Roll(die, printer, isPlayer);
             pastRolls.Add(roll);
             diceUsedHistory.Add(die);
-            addScore(roll);
+            //addScore(roll);
             dice.Remove(die);
 
             int total = pastRolls.Sum();
@@ -121,6 +120,8 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                       $"Your total score was {total}. {totalComment}\n" +
                       $"Your highest roll was {highest}.\n" +
                       $"You had {evens} even rolls and {odds} odd rolls.";
+
+            return roll;
         }
 
         internal void Reset()

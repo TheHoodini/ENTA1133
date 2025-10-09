@@ -6,6 +6,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
     {
         static void Main(string[] args)
         {
+            //Console.OutputEncoding = System.Text.Encoding.UTF8;
             DungeonGameManager gameManager = new();
             gameManager.StartGame();
         }

@@ -1,4 +1,5 @@
-﻿using GD14_1133_A1_JuanDiego_DiceGame.Tools;
+﻿using GD14_1133_A1_JuanDiego_DiceGame.Classes;
+using GD14_1133_A1_JuanDiego_DiceGame.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,8 +29,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
         {
             textPrinter.PrinterType = "1";
             var roller = new DieRoller();
-            bool wantsToPlay = true;
+
+            int playerRoll = 0;
+            int cpuRoll = 0;
+
+            string tieMessage = "";
             string summary = "";
+
             // Create a CPU player
             Player playerCpu = new Player("Mechasaur", false);
             playerCpu.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
@@ -54,13 +60,15 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             for (int i = 0; i < 2; i++)
             {
                 textPrinter.Dialogue($"Round {i + 1}", "Start!");
+                string yourDie = "";
+                string cpuDie = "";
                 if (isPlayerTurn)
                 {
                     // Player's turn
-                    // Choose the die Dizarius will roll
+                    // Choose the die the CPU will roll
                     textPrinter.Print($"\nPick the die the {playerCpu.Name} will roll: " + string.Join(", ", playerCpu.Dice));
                     Console.Write($"[{player1.Name.ToUpper()}] ");
-                    string cpuDie = Console.ReadLine();
+                    cpuDie = Console.ReadLine();
                     while (!playerCpu.Dice.Contains(cpuDie.ToLower()))
                     {
                         textPrinter.Print("Please type one of the options: " + string.Join(", ", playerCpu.Dice));
@@ -69,43 +77,78 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                     }
 
                     // Choose the die the player will roll
-                    textPrinter.Print("Pick the die you will roll: " + string.Join(", ", player1.Dice));
-                    Console.Write($"[{player1.Name.ToUpper()}] ");
-                    string yourDie = Console.ReadLine();
-                    while (!player1.Dice.Contains(yourDie.ToLower()))
+                    
+                    if (player1.Dice.Count == 0)
                     {
-                        textPrinter.Print("Please type one of the options: " + string.Join(", ", player1.Dice));
+                        textPrinter.Print("\n[You have no dice to roll!]");
+                    } 
+                    else 
+                    {
+                        textPrinter.Print("Pick the die you will roll: " + string.Join(", ", player1.Dice));
                         Console.Write($"[{player1.Name.ToUpper()}] ");
                         yourDie = Console.ReadLine();
+                        while (!player1.Dice.Contains(yourDie.ToLower()))
+                        {
+                            textPrinter.Print("Please type one of the options: " + string.Join(", ", player1.Dice));
+                            Console.Write($"[{player1.Name.ToUpper()}] ");
+                            yourDie = Console.ReadLine();
+                        }
                     }
-
-                    Console.WriteLine("");
-                    player1.UseDie(yourDie, textPrinter);
-                    playerCpu.UseDie(cpuDie, textPrinter);
                     isPlayerTurn = false;
-
-                    textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and {playerCpu.Name} \nwith a score of {playerCpu.Score}]");
                 }
                 else
                 {
                     // CPU's turn
                     // Choose the die the player will roll
-                    string[] playerOptions = player1.Dice.ToArray();
-                    string cpuChosenDie = playerOptions[rng.Next(playerOptions.Length)];
-                    textPrinter.Print($"\n[The {playerCpu.Name} has picked your die: {cpuChosenDie}]");
-
-                    // Choose the die Dizarius will roll
+                    if (player1.Dice.Count == 0)
+                    {
+                        textPrinter.Print("\n[You had no die to pick from]");
+                    }
+                    else
+                    {
+                        string[] playerOptions = player1.Dice.ToArray();
+                        yourDie = playerOptions[rng.Next(playerOptions.Length)];
+                        textPrinter.Print($"\n[The {playerCpu.Name} has picked your die: {yourDie}]");
+                    }
+                    // The die the cpu will roll
                     string[] cpuOptions = playerCpu.Dice.ToArray();
-                    string cpuDie = cpuOptions[rng.Next(cpuOptions.Length)];
+                    cpuDie = cpuOptions[rng.Next(cpuOptions.Length)];
                     textPrinter.Print($"[The {playerCpu.Name} has picked their own die: {cpuDie}]");
 
-                    Console.WriteLine("");
-                    player1.UseDie(cpuChosenDie, textPrinter);
-                    playerCpu.UseDie(cpuDie, textPrinter);
                     isPlayerTurn = true;
-
-                    textPrinter.Print($"\n[The round ends with you having a score of {player1.Score} and the {playerCpu.Name} \nwith a score of {playerCpu.Score}]");
                 }
+                Console.WriteLine("");
+
+                // roll the dice
+                if (player1.Dice.Count == 0)
+                {
+                    textPrinter.Print($"[You didn't have more die to roll]");
+                }
+                else
+                {
+                    playerRoll = player1.UseDie(yourDie, textPrinter);
+                }
+                cpuRoll = playerCpu.UseDie(cpuDie, textPrinter);
+
+                // reward points
+                if (playerRoll > cpuRoll)
+                {
+                    player1.addScore(1);
+                }
+                else if (playerRoll < cpuRoll)
+                {
+                    playerCpu.addScore(1);
+                }
+                else
+                {
+                    tieMessage = "It's a tie, nobody gets points!\n";
+                }
+
+                // turn results
+                textPrinter.Print($"\n{tieMessage}[The round ends with you having a score of {player1.Score} and the {playerCpu.Name} \nwith a score of {playerCpu.Score}]");
+                textPrinter.Print("\n[Press any key to continue]");
+                Console.ReadKey();
+                tieMessage = "";
             }
 
             if (player1.Score > playerCpu.Score)
@@ -126,7 +169,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
 
             summary += player1.Summary;
             textPrinter.Dialogue("Stats Summary", summary);
-            textPrinter.Print("Press any key to continue");
+            textPrinter.Print("\n[Press any key to continue]");
             Console.ReadKey();
 
             if (player1.Score > playerCpu.Score)

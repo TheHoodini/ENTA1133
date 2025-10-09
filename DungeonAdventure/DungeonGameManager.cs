@@ -1,4 +1,5 @@
-﻿using GD14_1133_A1_JuanDiego_DiceGame.Dungeon;
+﻿using GD14_1133_A1_JuanDiego_DiceGame.Classes;
+using GD14_1133_A1_JuanDiego_DiceGame.Dungeon;
 using GD14_1133_A1_JuanDiego_DiceGame.Tools;
 using System;
 using System.Collections.Generic;
@@ -62,7 +63,6 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
             currentRoom.OnRoomEntered(dungeonRef, currentRoom, playerRef);
 
             bool playing = true;
-            Console.OutputEncoding = System.Text.Encoding.UTF8;
 
             while (playing)
             {

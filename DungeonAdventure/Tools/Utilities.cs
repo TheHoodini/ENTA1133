@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GD14_1133_A1_JuanDiego_DiceGame.Classes;
 using GD14_1133_A1_JuanDiego_DiceGame.Dungeon; // Needed for Room
 using GD14_1133_A1_JuanDiego_DiceGame.Tools;   // In case of cross-refs like Player
 
@@ -37,7 +38,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
         }
 
         // Print the question again 
-        public static void OverwritePrompt(string message, int clearLines = 4, string question = "\nWhat will you do? (north, south, east, west, check, inventory):\n>")
+        public static void OverwritePrompt(string message, int clearLines = 4, string question = "\nWhat will you do? (n/s/e/w, check, inventory):\n>")
         {
             ClearLines(clearLines);
             Console.WriteLine($"{message}");
@@ -48,7 +49,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
         {
             int rows = dungeon.GetLength(0);
             int cols = dungeon.GetLength(1);
-
+            
             for (int i = 0; i < rows; i++)
             {
                 for (int j = 0; j < cols; j++)
@@ -84,7 +85,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
             Console.WriteLine("MAP");
             PrintMap(dungeon, playerRoom);
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-            Console.Write($"\n\nWhat will you do? (north, south, east, west, check, inventory):\n>");
+            Console.Write($"\n\nWhat will you do? (n/s/e/w, check, inventory):\n>");
         }
 
         public static void RefreshDungeonGame()

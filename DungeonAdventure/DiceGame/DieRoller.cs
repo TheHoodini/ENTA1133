@@ -13,7 +13,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
         public int Roll(string dieType, TextPrinter textPrinter, bool isPlayer)
         {
             // Extract the maximum roll from the die type 
-            int maxRoll = int.Parse(dieType[1..]);
+            int maxRoll = int.TryParse(dieType[1..], out int result) ? result : 1;
 
             // Generate a random roll between 1 and the max roll
             int rollResult = random.Next(1, maxRoll + 1);

@@ -22,6 +22,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                 { "t", 20 }, // Treasure 
                 { "c", 10 },  // Combat 
                 { "tt", 10 }, // Trap 
+                { "f", 7 }   // Fountain
             };
 
             // Create rooms
@@ -36,6 +37,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                         "t" => new RoomTreasure(index, i, j),
                         "c" => new RoomCombat(index, i, j),
                         "tt" => new RoomTrap(index, i, j),
+                        "f" => new RoomHealing(index, i, j),
                         _ => new RoomEmpty(index, i, j)
                     };
                     dungeon[i, j] = r;

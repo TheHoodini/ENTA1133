@@ -1,4 +1,5 @@
-﻿using GD14_1133_A1_JuanDiego_DiceGame.Scripts;
+﻿using GD14_1133_A1_JuanDiego_DiceGame.Classes;
+using GD14_1133_A1_JuanDiego_DiceGame.Scripts;
 using GD14_1133_A1_JuanDiego_DiceGame.Tools;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
 
         public string Sprite { get; protected set; }
 
-        public Room(int index, int row, int col, string sprite = "spE")
+        public Room(int index, int row, int col, string sprite = "roomE")
         {
             Index = index;
             Row = row;
@@ -41,12 +42,12 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
 
             if (!Visited)
             {
-                Console.WriteLine($"{exitMsg}You enter room #{Index + 1}: {RoomDescription()}");
+                Console.WriteLine($"{exitMsg}You enter room #{Index + 1}{RoomDescription()}");
                 Visited = true;
             }
             else
             {
-                Console.WriteLine($"{exitMsg}You return to room #{Index + 1}. {RoomDescription()}");
+                Console.WriteLine($"{exitMsg}You return to room #{Index + 1}{RoomDescription()}");
             }
 
             Utilities.PrintDungeonUI(dungeon, playerRoom, player);
@@ -67,9 +68,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     // ---------------------- Subclasses ----------------------
     public class RoomEmpty : Room
     {
-        public RoomEmpty(int index, int row, int col) : base(index, row, col, "spE") { }
+        public RoomEmpty(int index, int row, int col) : base(index, row, col, "roomE") { }
 
-        public override string RoomDescription() => "An empty, quiet room.";
+        public override string RoomDescription() => " and see an empty, quiet hallway.";
 
         public override void OnRoomSearched(Player player)
         {
@@ -83,13 +84,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     {
         private bool HasTreasure = true;
 
-        public RoomTreasure(int index, int row, int col) : base(index, row, col, "spT") { }
+        public RoomTreasure(int index, int row, int col) : base(index, row, col, "roomT") { }
 
         public override string RoomDescription()
         {
             return HasTreasure
-                ? "You found a treasure!"
-                : "There used to be a treasure here";
+                ? " and you find a treasure!"
+                : ", where there used to be a treasure";
         }
 
         public override void OnRoomSearched(Player player)
@@ -112,7 +113,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                 player.AddDice(new List<string> { die });
                 searchMessage = $"You search the room and find a {die} die!";
                 HasTreasure = false;
-                Sprite = "spE";
+                Sprite = "roomTE";
                 Utilities.FullClear();
                 Utilities.RefreshDungeonGame();
             }
@@ -129,13 +130,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     public class RoomCombat : Room
     {
         private bool HasCombat = true;
-        public RoomCombat(int index, int row, int col) : base(index, row, col, "spC") { }
+        public RoomCombat(int index, int row, int col) : base(index, row, col, "roomC") { }
 
         public override string RoomDescription() 
         {
             return HasCombat
-                ? "It's a room with an enemy! Be careful!"
-                : "There used to be an enemy but it was defeated.";
+                ? " and you find an enemy, be careful!"
+                : ". It feels safe now.";
         }
 
         public override void OnRoomSearched(Player player)
@@ -146,13 +147,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                 Utilities.FullClear();
                 HasCombat = diceGame.Play();
                 if (!HasCombat) {
-                    Sprite = "spE";
+                    Sprite = "roomE";
                 }
                 Utilities.RefreshDungeonGame();
             }
             else
             {
-                Utilities.OverwritePrompt("You already defeated the enemy here. The room is safe now.");
+                Utilities.OverwritePrompt("You see the defeated body of the enemy on the floor.");
             }
 
         }
@@ -164,25 +165,68 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     {
         private bool HasBeenSearched = false;
 
-        public RoomTrap(int index, int row, int col) : base(index, row, col, "spT") { }
+        public RoomTrap(int index, int row, int col) : base(index, row, col, "roomT") { }
 
         public override string RoomDescription()
         {
             return HasBeenSearched
-                ? "Be careful, something feels wrong here"
-                : "You found a treasure!";
+                ? ". Be careful, something feels wrong here."
+                : "and you find a treasure!";
         }
 
         public override void OnRoomSearched(Player player)
         {
             HasBeenSearched = true;
             Utilities.FullClear();
-            player.TakeDamage(5);
+            player.TakeDamage(10);
             Utilities.RefreshDungeonGame();
-            Utilities.OverwritePrompt("You tried to search... But you found a trap! you received 5 damage", 3);
+            Utilities.OverwritePrompt("You tried to search... But you found a trap! you received 10 damage.", 3);
         }
 
         public override string MapSymbol() => "t";
+    }
+
+    public class RoomHealing : Room
+    {
+        private bool HasHealing = true;
+
+        public RoomHealing(int index, int row, int col) : base(index, row, col, "roomF") { }
+
+        public override string RoomDescription()
+        {
+            return HasHealing
+                ? " and you find a healing fountain!"
+                : ", where the fountain healed you.";
+        }
+
+        public override void OnRoomSearched(Player player)
+        {
+            string searchMessage;
+            int clearLines = 4;
+            if (HasHealing)
+            {
+                if (player.HP == 100)
+                {
+                    searchMessage = "You are already at full health, no need to heal.";
+                    Utilities.OverwritePrompt(searchMessage, clearLines);
+                    return;
+                }
+                clearLines = 3;
+                searchMessage = $"You drink the water and get healed by 20!";
+                player.Heal(20);
+                HasHealing = false;
+                Sprite = "roomFE";
+                Utilities.FullClear();
+                Utilities.RefreshDungeonGame();
+            }
+            else
+            {
+                searchMessage = "You already drank from the fountain.";
+            }
+            Utilities.OverwritePrompt(searchMessage, clearLines);
+        }
+
+        public override string MapSymbol() => HasHealing ? "F" : " ";
     }
 
 
