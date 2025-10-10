@@ -11,20 +11,19 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
 {
     internal class DungeonGameManager
     {
-        private Player player = new Player("Hero");
+        private Player player = new Player("Engineer");
+        private int DungeonRows;
 
         // Static global references for RefreshDungeonGame
         public static Room[,]? CurrentDungeon { get; private set; }
         public static Room? CurrentRoom { get; private set; }
         public static Player? CurrentPlayer { get; private set; }
-        int DungeonRows;
+        
 
         public void StartMenu()
         {
-            Utilities.FullClear();
-            Console.WriteLine("Welcome to the Dungeon Game!");
-            Console.WriteLine("Press Enter to start...");
-            Console.ReadLine();
+            Console.Write(DungeonSprites.GetSprite("uiTitle"));
+            Console.ReadKey();
             StartGame();
         }
 
@@ -34,10 +33,12 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
             if (CurrentDungeon == null || CurrentPlayer == null)
             {
                 Random rng = new Random();
+                // Dungeon size
                 int rows = rng.Next(3, 6);
                 int cols = rng.Next(3, 9);
 
-                player.TakeDamage(0); // damage test
+                // damage test
+                //player.HP -= 10; 
 
                 player.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
                 var dungeon = DungeonMaker.GenerateDungeon(rows, cols);
@@ -105,24 +106,24 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                         break;
 
                     default:
-                        Utilities.OverwritePrompt($"Unknown command '{input}'");
+                        Utilities.InputText($"Unknown command '{input}'");
                         break;
                 }
             }
         }
 
-        private void MoveTo(Room? target, ref Room currentRoom, Room[,] dungeon, Player player, string direction)
+        private void MoveTo(Room? targetRoom, ref Room currentRoom, Room[,] dungeon, Player player, string direction)
         {
-            if (target != null)
+            if (targetRoom != null)
             {
                 string exitMsg = currentRoom.OnRoomExit();
-                currentRoom = target;
+                currentRoom = targetRoom;
                 CurrentRoom = currentRoom; 
                 currentRoom.OnRoomEntered(dungeon, currentRoom, player, exitMsg);
             }
             else
             {
-                Utilities.OverwritePrompt($"You can’t go {direction}.");
+                Utilities.InputText($"You can’t go {direction}.");
             }
         }
     }

@@ -38,7 +38,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
         }
 
         // Print the question again 
-        public static void OverwritePrompt(string message, int clearLines = 4, string question = "\nWhat will you do? (n/s/e/w, check, inventory):\n>")
+        public static void InputText(string message, int clearLines = 4, string question = "\nWhat will you do? (n/s/e/w, check, inventory):\n>")
         {
             ClearLines(clearLines);
             Console.WriteLine($"{message}");
@@ -81,7 +81,8 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
             hpBar = new string('█', filledBars) + new string('░', NumHpBars - filledBars);
 
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-            Console.WriteLine($"HP ({player.HP}/{maxHp}) {hpBar}");
+            Console.WriteLine($"HP   {player.HP}/{maxHp} {hpBar}");
+            Console.WriteLine($"$$   {player.Money}");
             Console.WriteLine("MAP");
             PrintMap(dungeon, playerRoom);
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");

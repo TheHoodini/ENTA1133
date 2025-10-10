@@ -160,7 +160,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
             else if (player1.Score < playerCpu.Score)
             {
                 summary += $"The {playerCpu.Name} won the duel! You recieve 15 damage!\n";
-                player1.TakeDamage(10);
+                player1.HP -= 15;
             }
             else
             {

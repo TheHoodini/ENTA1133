@@ -8,7 +8,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
         {
             //Console.OutputEncoding = System.Text.Encoding.UTF8;
             DungeonGameManager gameManager = new();
-            gameManager.StartGame();
+            gameManager.StartMenu();
         }
     }
 }

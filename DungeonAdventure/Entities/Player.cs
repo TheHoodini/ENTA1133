@@ -15,8 +15,10 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         private string name = playerName;
         private int score = 0;
         private List<string> dice = new();
+        private Dictionary<string, int> inventory = new();
         private string summary = "";
         private int hp = 100;
+        private int money = 0;
 
         private readonly DieRoller dieRoller = new();
         private List<int> pastRolls = new(); // Track all roll results
@@ -27,10 +29,16 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             get { return hp; }
             set { hp = Math.Clamp(value, 0, 100); }
         }
+        public int Money
+        {
+            get { return money; }
+            set { money = Math.Max(0, value); } 
+        }
         public string Name => name;
         public int Score => score;
         public string Summary => summary;
         internal List<string> Dice => new List<string>(dice);
+        internal Dictionary<string, int> Inventory => new Dictionary<string, int>(inventory);
 
         internal void ChangeName(string newName)
         {
@@ -47,14 +55,25 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             dice.AddRange(diceToAdd);
         }
 
-        internal void TakeDamage(int damage)
+        internal void AddToInventory(string item, int quantity = 1)
         {
-            hp -= damage;
-            if (hp < 0) hp = 0;
+            if (inventory.ContainsKey(item))
+            {
+                inventory[item] += quantity;
+            }
+            else
+            {
+                inventory[item] = quantity;
+            }
         }
-        internal void Heal(int amount)
+
+        internal void UseItem(string item, int quantity = 1)
         {
-            hp += amount;
+            inventory[item] -= quantity;
+            if (inventory[item] <= 0)
+            {
+                inventory.Remove(item);
+            }
         }
 
         internal void OpenInventory()
@@ -63,15 +82,24 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             Console.WriteLine(DungeonSprites.GetSprite("uiInv"));
             Console.WriteLine("                            INVENTORY");
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-            Console.WriteLine($"Player: {name}");
+            Console.WriteLine($"Name: The {name}");
             Console.WriteLine($"HP: {hp}/100");
+            Console.WriteLine($"Money: {money}\n");
             Console.WriteLine("Dice: " + (dice.Count > 0 ? string.Join(", ", dice) : "None"));
+            if (inventory.Count > 0)
+            {
+                Console.WriteLine("Items:");
+                foreach (var item in inventory)
+                {
+                    Console.WriteLine($"- {item.Key} x{item.Value}");
+                }
+            }
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
             Console.Write($"\n\nWhat will you do? (close):\n>");
             string input = Console.ReadLine()?.ToLower() ?? "";
             while (input != "close" && input != "c")
             {
-                Utilities.OverwritePrompt($"Invalid command '{input}'. Type 'close' to exit inventory.", question: "\nWhat will you do? (close):\n>");
+                Utilities.InputText($"Invalid command '{input}'. Type 'close' to exit inventory.", question: "\nWhat will you do? (close):\n>");
                 input = Console.ReadLine()?.ToLower() ?? "";
             }
             Utilities.RefreshDungeonGame();
