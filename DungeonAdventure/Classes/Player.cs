@@ -84,7 +84,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
             Console.WriteLine($"Name: The {name}");
             Console.WriteLine($"HP: {hp}/100");
-            Console.WriteLine($"Money: {money}\n");
+            Console.WriteLine($"Coins: ${money}\n");
             Console.WriteLine("Dice: " + (dice.Count > 0 ? string.Join(", ", dice) : "None"));
             if (inventory.Count > 0)
             {

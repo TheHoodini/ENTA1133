@@ -233,7 +233,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     {
         private bool IsLocked = true;
 
-        public RoomLocked(int index, int row, int col) : base(index, row, col, "roomLck") { }
+        public RoomLocked(int index, int row, int col) : base(index, row, col, "roomL") { }
 
         public override string RoomDescription()
         {
@@ -259,7 +259,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                 player.UseItem("Rusted key");
                 player.Money += 20;
                 IsLocked = false;
-                Sprite = "roomE";
+                Sprite = "roomLO";
                 Utilities.FullClear();
                 Utilities.RefreshDungeonGame();
             }
