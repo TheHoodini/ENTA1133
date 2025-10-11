@@ -12,15 +12,17 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
         {
             return sprite switch
             {
-                "roomE" => RoomEmpty(),
-                "roomT" => RoomTreasure(),
-                "roomTE" => RoomTreasureEmpty(),
                 "roomC" => RoomCombat(),
+                "roomE" => RoomEmpty(),
                 "roomF" => RoomFountain(),
                 "roomFE" => RoomFountainEmpty(),
                 "roomL" => RoomLocked(),
                 "roomLO" => RoomLockedOpen(),
+                "roomT" => RoomTreasure(),
+                "roomTE" => RoomTreasureEmpty(),
+                
                 "uiInv" => UiInventory(),
+                "uiGameOver" => UiGameOver(),
                 "uiTitle" => UiTitle(),
                 _ => RoomEmpty()
             };
@@ -332,6 +334,38 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
   ____~    |_|  |___           __-----~    ~`---,__             ___
 -~                  ~---___,--~'                  ~~----_____-~'
 `~----,____";
+            return roomSprite;
+        }
+
+        private static string UiGameOver()
+        {
+            string roomSprite = @"
+                          ______                                    
+                         /      \                                   
+                        /$$$$$$  |  ______   _____  ____    ______  
+                        $$ | _$$/  /      \ /     \/    \  /      \ 
+                        $$ |/    | $$$$$$  |$$$$$$ $$$$  |/$$$$$$  |
+                        $$ |$$$$ | /    $$ |$$ | $$ | $$ |$$    $$ |
+                        $$ \__$$ |/$$$$$$$ |$$ | $$ | $$ |$$$$$$$$/ 
+                        $$    $$/ $$    $$ |$$ | $$ | $$ |$$       |
+                         $$$$$$/   $$$$$$$/ $$/  $$/  $$/  $$$$$$$/ 
+                                            
+                                            
+                                            
+                          ______                                    
+                         /      \                                   
+                        /$$$$$$  | __     __  ______    ______      
+                        $$ |  $$ |/  \   /  |/      \  /      \     
+                        $$ |  $$ |$$  \ /$$//$$$$$$  |/$$$$$$  |    
+                        $$ |  $$ | $$  /$$/ $$    $$ |$$ |  $$/     
+                        $$ \__$$ |  $$ $$/  $$$$$$$$/ $$ |          
+                        $$    $$/    $$$/   $$       |$$ |          
+                         $$$$$$/      $/     $$$$$$$/ $$/   
+
+
+                   
+                              Do you want to play again?
+";
             return roomSprite;
         }
 

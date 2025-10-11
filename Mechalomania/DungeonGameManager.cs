@@ -63,9 +63,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
 
             currentRoom.OnRoomEntered(dungeonRef, currentRoom, playerRef);
 
-            bool playing = true;
-
-            while (playing)
+            while (playerRef.IsPlaying)
             {
                 string input = Console.ReadLine()?.ToLower() ?? "";
                 switch (input)
@@ -102,13 +100,48 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
 
                     case "quit":
                         Console.WriteLine("[Exiting dungeon...]");
-                        playing = false;
+                        playerRef.IsPlaying = false;
                         break;
 
                     default:
                         Utilities.InputText($"Unknown command '{input}'");
                         break;
                 }
+                if (playerRef.HP <= 0)
+                {
+                    playerRef.IsPlaying = false;
+                    GameOver();
+                }
+            }
+        }
+
+        public void GameOver()
+        {
+            Utilities.FullClear();
+            Console.WriteLine(DungeonSprites.GetSprite("uiGameOver"));
+            Console.Write("                                          ");
+            string wantToRestart = Console.ReadLine()?.ToLower() ?? "";
+
+            while (wantToRestart != "y" && wantToRestart != "yes" && wantToRestart != "n" && wantToRestart != "no")
+            {
+                Utilities.ClearLines(1);
+                Console.Write("                                          ");
+                wantToRestart = Console.ReadLine()?.ToLower() ?? "";
+            }
+
+            if (wantToRestart == "y" || wantToRestart == "yes")
+            {
+                // Reset 
+                CurrentDungeon = null;
+                CurrentRoom = null;
+                CurrentPlayer = null;
+                player = new Player("Engineer");
+                StartGame();
+            }
+            else
+            {
+                Utilities.ClearLines(1);
+                Console.WriteLine("                                  Thanks for playing!");
             }
         }
 

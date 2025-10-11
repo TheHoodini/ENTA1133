@@ -19,6 +19,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         private string summary = "";
         private int hp = 100;
         private int money = 0;
+        private bool isPlaying = true;
 
         private readonly DieRoller dieRoller = new();
         private List<int> pastRolls = new(); // Track all roll results
@@ -33,6 +34,11 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         {
             get { return money; }
             set { money = Math.Max(0, value); } 
+        }
+        public bool IsPlaying
+        {
+            get { return isPlaying; }
+            set { isPlaying = value; }
         }
         public string Name => name;
         public int Score => score;
