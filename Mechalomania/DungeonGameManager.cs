@@ -69,7 +69,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                 switch (input)
                 {
                     case "north":
-                    case "n":
+                    case "w":
                         MoveTo(currentRoom.North, ref currentRoom, dungeonRef, playerRef, "north");
                         break;
 
@@ -79,12 +79,12 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                         break;
 
                     case "east":
-                    case "e":
+                    case "d":
                         MoveTo(currentRoom.East, ref currentRoom, dungeonRef, playerRef, "east");
                         break;
 
                     case "west":
-                    case "w":
+                    case "a":
                         MoveTo(currentRoom.West, ref currentRoom, dungeonRef, playerRef, "west");
                         break;
 

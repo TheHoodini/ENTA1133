@@ -157,7 +157,6 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
             }
 
         }
-
         public override string MapSymbol() => HasCombat ? "C" : " ";
     }
 

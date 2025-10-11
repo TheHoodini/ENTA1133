@@ -38,7 +38,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
         }
 
         // Print the question again 
-        public static void InputText(string message, int clearLines = 4, string question = "\nWhat will you do? (n/s/e/w, check, inventory):\n>")
+        public static void InputText(string message, int clearLines = 4, string question = "\nWhat will you do? (w/a/s/d, check, inventory):\n>")
         {
             ClearLines(clearLines);
             Console.WriteLine($"{message}");
@@ -86,7 +86,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
             Console.WriteLine("MAP");
             PrintMap(dungeon, playerRoom);
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-            Console.Write($"\n\nWhat will you do? (n/s/e/w, check, inventory):\n>");
+            Console.Write($"\n\nWhat will you do? (w/a/s/d, check, inventory):\n>");
         }
 
         public static void RefreshDungeonGame()
