@@ -24,7 +24,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
                 foreach (char c in text)
                 {
                     Console.Write(c);
-                    Thread.Sleep(10);
+                    Thread.Sleep(20);
                 }
                 Console.WriteLine();
                 Thread.Sleep(100);

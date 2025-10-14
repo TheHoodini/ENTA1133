@@ -41,6 +41,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                 //player.HP -= 10; 
 
                 player.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
+                player.AddItems(new Dictionary<string, int>
+                {
+                    { "hammer", 2 },
+                    { "screwdriver", 1 },
+                    { "canteen", 2 },
+                });  
+
                 var dungeon = DungeonMaker.GenerateDungeon(rows, cols);
 
                 // Random starting position
@@ -141,7 +148,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
             else
             {
                 Utilities.ClearLines(1);
-                Console.WriteLine("                                  Thanks for playing!");
+                Console.WriteLine("                                 Thanks for playing!");
             }
         }
 

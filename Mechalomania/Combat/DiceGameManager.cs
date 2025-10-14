@@ -15,9 +15,6 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
         TextPrinter textPrinter = new TextPrinter();
         Random rng = new Random();
 
-        bool curseOfTheFrog = false;
-        int angerLevel = 0;
-
         // ------------------- Start the game -------------------
         public void Start()
         {
@@ -186,14 +183,6 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Scripts
                 
         }
 
-        public void CurseOfTheFrog()
-        {
-            curseOfTheFrog = true;
-            textPrinter.Dialogue("Dizarius", "You have tested my patience too long... By my hand, you now bear the curse of the frog!");
-            textPrinter.Print("\n[You have received the curse of the frog. Your inventory \nwas filled with d7 dice]\n\nPress ENTER to continue");
-            player1.ChangeName("Frog");
-            Console.ReadLine();
-        }
 
     }
 }

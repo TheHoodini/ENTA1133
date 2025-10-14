@@ -15,7 +15,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         private string name = playerName;
         private int score = 0;
         private List<string> dice = new();
-        private Dictionary<string, int> inventory = new();
+        private Dictionary<Item, int> inventory = new();
         private string summary = "";
         private int hp = 100;
         private int money = 0;
@@ -44,7 +44,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         public int Score => score;
         public string Summary => summary;
         internal List<string> Dice => new List<string>(dice);
-        internal Dictionary<string, int> Inventory => new Dictionary<string, int>(inventory);
+        internal Dictionary<Item, int> Inventory => new Dictionary<Item, int>(inventory);
 
         internal void ChangeName(string newName)
         {
@@ -61,52 +61,121 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             dice.AddRange(diceToAdd);
         }
 
-        internal void AddToInventory(string item, int quantity = 1)
+        internal void AddItem(string itemName, int amount = 1)
         {
+            Item item = ItemList.Get(itemName);
+
             if (inventory.ContainsKey(item))
             {
-                inventory[item] += quantity;
+                inventory[item] += amount;
             }
             else
             {
-                inventory[item] = quantity;
+                inventory[item] = amount;
             }
         }
 
-        internal void UseItem(string item, int quantity = 1)
+        internal void AddItems(Dictionary<string, int> items)
         {
-            inventory[item] -= quantity;
+            foreach (var itemElement in items)
+            {
+                AddItem(itemElement.Key, itemElement.Value);
+            }
+        }
+
+        internal void UseItem(string itemName, int amount = 1)
+        {
+            Item item = ItemList.Get(itemName);
+
+            inventory[item] -= amount;
             if (inventory[item] <= 0)
             {
                 inventory.Remove(item);
             }
         }
-
-        internal void OpenInventory()
+        public bool HasItem(string itemName, int requiredAmount = 1)
         {
-            Utilities.FullClear();
+            Item item = ItemList.Get(itemName);
+
+            return inventory.TryGetValue(item, out int amount) && amount >= requiredAmount;
+        }
+
+        internal void PrintInventory()
+        {
             Console.WriteLine(DungeonSprites.GetSprite("uiInv"));
             Console.WriteLine("                            INVENTORY");
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
             Console.WriteLine($"Name: The {name}");
             Console.WriteLine($"HP: {hp}/100");
             Console.WriteLine($"Coins: ${money}\n");
-            Console.WriteLine("Dice: " + (dice.Count > 0 ? string.Join(", ", dice) : "None"));
+            Console.WriteLine("Items:");
             if (inventory.Count > 0)
             {
-                Console.WriteLine("Items:");
                 foreach (var item in inventory)
                 {
-                    Console.WriteLine($"- {item.Key} x{item.Value}");
+                    Console.WriteLine($"- {item.Key.Name} x{item.Value}");
                 }
             }
-            Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-            Console.Write($"\n\nWhat will you do? (close):\n>");
-            string input = Console.ReadLine()?.ToLower() ?? "";
-            while (input != "close" && input != "c")
+            else
             {
-                Utilities.InputText($"Invalid command '{input}'. Type 'close' to exit inventory.", question: "\nWhat will you do? (close):\n>");
+                Console.WriteLine("- None.");
+            }
+            Console.WriteLine("═════════════════════════════════════════════════════════════════════");
+        }
+        internal void OpenInventory()
+        {
+            bool OpenInventory = true;
+            string input;
+            Utilities.FullClear();
+            PrintInventory();
+            Console.Write($"\n\nWhat will you do? (use, info, close):\n>");
+            while (OpenInventory) 
+            {
                 input = Console.ReadLine()?.ToLower() ?? "";
+
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    Utilities.InputText("Please enter a command.", question: "\nWhat will you do? (use, info, close):\n>");
+                    continue;
+                }
+
+                string[] commandParts = input.Split(' ', 2); 
+                string command = commandParts[0].ToLower();
+
+                switch (command) 
+                { 
+                    case "use":
+                    case "u":
+                        break;
+
+                    case "info":
+                    case "i":
+                        if (commandParts.Length < 2 || string.IsNullOrWhiteSpace(commandParts[1]))
+                        {
+                            Utilities.InputText("No item specified. Type 'info <item name>'", question: "\nWhat will you do? (use, info, close):\n>");
+                            continue;
+                        }
+                        if (HasItem(commandParts[1].Trim().ToLower()))
+                        {
+                            Utilities.ClearLines(4);
+                            Item infoItem = ItemList.Get(commandParts[1].Trim().ToLower());
+                            infoItem.Info();
+                        }
+                        else
+                        {
+                            Utilities.InputText($"The item '{commandParts[1].Trim()}' is not in your inventory", question: "\nWhat will you do? (close):\n>");
+                        }
+                        break;
+                    
+                    case "close":
+                    case "c":
+                        OpenInventory = false;
+                        break;
+
+                    default:
+                        Utilities.InputText($"Invalid command '{input}'.", question: "\nWhat will you do? (close):\n>");
+                        break;
+                }
             }
             Utilities.RefreshDungeonGame();
         }
