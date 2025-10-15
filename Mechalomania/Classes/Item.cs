@@ -66,6 +66,17 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             Console.WriteLine($"{Name} used to deal {Damage} damage!");
         }
 
+        public int Use(Player player, Enemy enemy)
+        {
+            TextPrinter printer = new()
+            {
+                PrinterType = "1"
+            };
+            printer.Print($"You used the {Name}.");
+            int totalDamage = CombatRoller.Attack(Damage, EffectRoll, true);
+            return totalDamage;
+        }
+
     }
 
     // Consumable item

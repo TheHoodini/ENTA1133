@@ -83,14 +83,15 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
             Console.Write($"\n\nWhat will you do? (w/a/s/d, check, inventory):\n>");
         }
 
-        public static void PrintHPBar(string label, int currentHP, int maxHP = 100)
+        public static void PrintHPBar(string label, int currentHP, int maxHP = 100, int defaultSpace1 = 5)
         {
             string hpBar = "";
-            int NumHpBars = 10;
+            int NumHpBars = 16;
             int filledBars = (int)Math.Ceiling((currentHP / (double)maxHP) * NumHpBars);
             hpBar = new string('█', filledBars) + new string('░', NumHpBars - filledBars);
-            string space = new string(' ', Math.Max(0, 7 - (currentHP.ToString() + maxHP).Length));
-            Console.WriteLine($"{label}   {currentHP}/{maxHP}{space}{hpBar}");
+            string space1 = new string(' ', Math.Max(0, defaultSpace1 - label.Length));
+            string space2 = new string(' ', Math.Max(0, 7 - (currentHP.ToString() + maxHP).Length));
+            Console.WriteLine($"{label}{space1}{currentHP}/{maxHP}{space2}{hpBar}");
         }
 
         public static string DescribeLoot(Dictionary<string, int> items)
@@ -100,16 +101,20 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
             foreach (var entry in items)
             {
                 if (entry.Value == 1)
-                    itemNames.Add(entry.Key);
+                    itemNames.Add($"a {entry.Key}");
                 else
                     itemNames.Add($"{entry.Value} {entry.Key}s");
             }
+
+            if (itemNames.Count == 1)
+                return itemNames[0];
 
             var lastItem = itemNames[^1];
             var allButLast = itemNames.Take(itemNames.Count - 1);
 
             return $"{string.Join(", ", allButLast)} and {lastItem}";
         }
+
 
         public static void RefreshDungeonGame()
         {

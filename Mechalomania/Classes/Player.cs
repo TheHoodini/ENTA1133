@@ -83,15 +83,21 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             }
         }
 
-        internal void UseItem(string itemName, int amount = 1)
+        private Enemy voidEnemy = new ("Void", "VOID", 1, 1, 1, ["1d1"], 5, "", "");
+        internal int? UseItem(string itemName, int amount = 1, Enemy? enemy = null)
         {
+            if (enemy == null) enemy = voidEnemy;
             Item item = ItemList.Get(itemName);
+
+            int? result = null;
+
             if (item is ItemConsumable consumable)
             {
-                consumable.Use(this);
-            } else
+                consumable.Use(this); // void return
+            }
+            else if (item is ItemWeapon weapon)
             {
-                item.Use();
+                result = weapon.Use(this, enemy); // weapon damage
             }
 
             inventory[item] -= amount;
@@ -99,7 +105,10 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             {
                 inventory.Remove(item);
             }
+
+            return result;
         }
+
         public bool HasItem(string itemName, int requiredAmount = 1)
         {
             Item item = ItemList.Get(itemName);

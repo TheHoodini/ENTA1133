@@ -1,9 +1,11 @@
 ﻿using GD14_1133_A1_JuanDiego_DiceGame.Classes;
+using GD14_1133_A1_JuanDiego_DiceGame.Combat;
 using GD14_1133_A1_JuanDiego_DiceGame.Scripts;
 using GD14_1133_A1_JuanDiego_DiceGame.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static GD14_1133_A1_JuanDiego_DiceGame.Classes.ItemList;
@@ -84,8 +86,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     public class RoomTreasure : Room
     {
         private bool HasTreasure = true;
+        private Random rng = new();
+        private int treasureID;
 
-        public RoomTreasure(int index, int row, int col) : base(index, row, col, "roomT") { }
+        public RoomTreasure(int index, int row, int col) : base(index, row, col, "roomT") 
+        { 
+            treasureID = rng.Next(3);
+        }
 
         public override string RoomDescription()
         {
@@ -100,9 +107,23 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
             int clearLines;
             if (HasTreasure)
             {
-                var loot = ItemList.GetRandomItems(ItemCategory.Loot, 5);
-                player.AddItems(loot);
-                searchMessage = $"You search... and find {Utilities.DescribeLoot(loot)}!";
+                switch (treasureID)
+                {
+                    case 0:
+                        var loot = ItemList.GetRandomItems(ItemCategory.Loot, 2);
+                        player.AddItems(loot);
+                        searchMessage = $"You search... and find {Utilities.DescribeLoot(loot)}!";
+                        break;
+                    case 1:
+                        searchMessage = "You search... and find 10 coins!";
+                        player.Money += 10;
+                        break;
+                    default:
+                        var loot2 = ItemList.GetRandomItems(ItemCategory.Combat, 2);
+                        player.AddItems(loot2);
+                        searchMessage = $"You search... and find {Utilities.DescribeLoot(loot2)}!";
+                        break;
+                }
                 Sprite = "roomTE";
                 HasTreasure = false;
                 Utilities.RefreshDungeonGame();
@@ -122,7 +143,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     public class RoomCombat : Room
     {
         private bool HasCombat = true;
-        public RoomCombat(int index, int row, int col) : base(index, row, col, "roomC") { }
+        private Random rng = new();
+        private int enemyID;
+
+        public RoomCombat(int index, int row, int col) : base(index, row, col, "roomC")
+        {
+            enemyID = rng.Next(3);
+        }
 
         public override string RoomDescription() 
         {
@@ -135,9 +162,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
         {
             if (HasCombat)
             {
-                DiceGameManager diceGame = new(player);
+                //DiceGameManager diceGame = new(player);
                 Utilities.FullClear();
-                HasCombat = diceGame.Play();
+                HasCombat = CombatGame.Start(player, enemyID);
                 if (!HasCombat) {
                     Sprite = "roomE";
                 }
@@ -246,9 +273,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                     return;
                 }
                 clearLines = 3;
-                searchMessage = $"You used the rusted key. Behind the door you find 20 coins!";
+                searchMessage = $"You used the rusted key. Behind the door you find 30 coins!";
                 player.UseItem("rusted key");
-                player.Money += 20;
+                player.Money += 30;
                 IsLocked = false;
                 Sprite = "roomLO";
                 Utilities.FullClear();
