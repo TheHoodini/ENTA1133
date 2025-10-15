@@ -19,7 +19,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Combat
             Random rng = new();
             var enemies = new List<Enemy> 
             {
-                new("Steam Robot", "S. ROBOT", 30, 30, 3, ["1d10", "2d7"], 5, "eneRobot", "A Steam Robot comes from the shadows, its eyes still glow intensely."),
+                new("Steam Robot", "S. ROBOT", 30, 30, 3, ["1d10", "2d7"], 2, "eneRobot", "A Steam Robot comes from the shadows, its eyes still glow intensely."),
                 new("Mechasaur", "MECHASAUR", 40, 40, 1, ["1d15", "2d10"], 5, "eneMecha", "A Mechasaur comes from the depths of the sewers!"),
                 new("Evil Tractor", "E. TRACTOR", 100, 100, 1, ["1d20", "2d20"], 10, "eneTractor", "You hear a loud engine... It's an Evil Tractor!"),
             };
@@ -40,12 +40,12 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Combat
                     if (item.Key is ItemCombat)
                     {
                         if (item.Key is ItemWeapon)
-                            Console.WriteLine($"{item.Key.Name}({((ItemWeapon)item.Key).Damage} + {item.Key.EffectRoll}) x{item.Value}");
+                            Console.WriteLine($"{item.Key.Name}({((ItemWeapon)item.Key).Damage} + {item.Key.EffectRoll} dmg) x{item.Value}");
                         else
-                            Console.WriteLine($"{item.Key.Name}({item.Key.EffectRoll}) x{item.Value}");
+                            Console.WriteLine($"{item.Key.Name}({item.Key.EffectRoll} heal) x{item.Value}");
                     }
                 }
-                Console.WriteLine("Fists(2d6)\n═════════════════════════════════════════════════════════════════════");
+                Console.WriteLine("Fists(2d6 dmg)\n═════════════════════════════════════════════════════════════════════");
                 bool isDeciding = true;
                 int numCombatItems = player.Inventory
                     .Where(entry => entry.Key is ItemCombat)
@@ -127,8 +127,14 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Combat
                         }
                         if (enemy.HP <= 0)
                         {
-                            textPrinter.Print($"You defeated the {enemy.Name}!");
+                            textPrinter.Print($"\nYou defeated the {enemy.Name}!");
                             inCombat = false;
+                            var loot = ItemList.GetRandomItems(ItemList.ItemCategory.Any, (enemyID + 2) * 2);
+                            player.AddItems(loot);
+                            textPrinter.Print($"You found {Utilities.DescribeLoot(loot)} on the {enemy.Name}!");
+
+                            Console.WriteLine("\nPress any key to continue");
+                            Console.ReadKey();
                             break;
                         }
                         isPlayerTurn = false;

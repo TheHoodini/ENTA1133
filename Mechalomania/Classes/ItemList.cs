@@ -19,11 +19,11 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         static ItemList()
         {
             AddToList(new ItemWeapon("Hammer", 5, "1d10", "A hammer commonly used by workers.\nDamage: 5 + 1d10"));
-            AddToList(new ItemWeapon("Wrench", 2, "2d8", "The number 1 tool to repair pipes.\nDamage: 2 + 2d4"));
-            AddToList(new ItemWeapon("Screwdriver", 1, "2d3", "The simplest of tools.\nDamage: 1 + 2d3"));
+            AddToList(new ItemWeapon("Wrench", 2, "2d8", "The number 1 tool to repair pipes.\nDamage: 2 + 2d8"));
+            AddToList(new ItemWeapon("Screwdriver", 2, "3d6", "The simplest of tools.\nDamage: 2 + 3d6"));
 
-            AddToList(new ItemConsumable("Canteen", "heal", "1d20", "A bottle filled with clean water.\nHeal: 1d20"));
-            AddToList(new ItemConsumable("Coffee", "heal", "2d10", "A good drink for sleepy times.\nHeal: 2d10"));
+            AddToList(new ItemConsumable("Canteen", "heal", "1d25", "A bottle filled with clean water.\nHeal: 1d25"));
+            AddToList(new ItemConsumable("Coffee", "heal", "2d15", "A good drink for sleepy times.\nHeal: 2d15"));
 
             AddToList(new ItemKey("Rusted Key", "An old but sturdy key that seems to work.\nEffect: Can open locked doors if you <check> them"));
             AddToList(new ItemKey("Crowbar", "One of The Mechanic's tools that anyone can use!\nEffect: Can avoid traps if you <check> them"));
@@ -51,17 +51,15 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         public static Dictionary<string, int> GetRandomItems(ItemCategory category, int amount)
         {
             var itemSelection = _items.Values.Where(item =>
+                item is not ItemUnknown && ( // Exclude ItemUnknown 
                 category == ItemCategory.Any ||
                 (category == ItemCategory.Combat && (item is ItemWeapon || item is ItemConsumable)) ||
-                (category == ItemCategory.Loot && (item is ItemKey || item is ItemSellable))
+                (category == ItemCategory.Loot && (item is ItemKey || item is ItemSellable)))
             ).ToList();
-
-            //if (itemSelection.Count == 0) throw new Exception($"No items found for '{category}'");
 
             var rng = new Random();
             var result = new Dictionary<string, int>();
 
-            // Give random items
             for (int i = 0; i < amount; i++)
             {
                 var randomItem = itemSelection[rng.Next(itemSelection.Count)];
@@ -75,10 +73,6 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
 
             return result;
         }
-
-
-
-
 
 
     }

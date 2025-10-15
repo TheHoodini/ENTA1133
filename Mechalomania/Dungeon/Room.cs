@@ -181,11 +181,15 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     public class RoomTrap : Room
     {
         private bool HasBeenSearched = false;
+        private bool HasTreasure = true;
 
         public RoomTrap(int index, int row, int col) : base(index, row, col, "roomT") { }
 
         public override string RoomDescription()
         {
+            if (HasBeenSearched && !HasTreasure)
+                return ", where there used to be a trap with a treasure";
+
             return HasBeenSearched
                 ? ". Be careful, something feels wrong here."
                 : " and you find a treasure!";
@@ -193,14 +197,33 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
 
         public override void OnRoomSearched(Player player)
         {
-            HasBeenSearched = true;
-            Utilities.FullClear();
-            player.HP -= 10;
-            Utilities.RefreshDungeonGame();
-            Utilities.InputText("You tried to search... But you found a trap! you received 10 damage.", 3);
-        }
+            if (HasTreasure)
+            {
+                if (!player.HasItem("crowbar"))
+                {
+                    HasBeenSearched = true;
+                    player.HP -= 10;
+                    Utilities.FullClear();
+                    Utilities.RefreshDungeonGame();
+                    Utilities.InputText("You search... A trap activates! You lose 10 HP.", 3);
+                    return;
+                }
+                player.UseItem("crowbar");
+                var loot = ItemList.GetRandomItems(ItemCategory.Any, 3);
+                player.AddItems(loot);
+                HasTreasure = false;
+                Sprite = "roomTE";
+                Utilities.FullClear();
+                Utilities.RefreshDungeonGame();
+                Utilities.InputText($"You used the crowbar to disable the trap. You search... And find {Utilities.DescribeLoot(loot)}!", 3);
 
-        public override string MapSymbol() => "T";
+            }
+            else
+            {
+                Utilities.InputText("You already searched here, nothing remains.");
+            }
+        }
+        public override string MapSymbol() => HasTreasure ? "T" : " ";
     }
 
     public class RoomHealing : Room
@@ -229,8 +252,8 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                     return;
                 }
                 clearLines = 3;
-                searchMessage = $"You drink the water and get healed by 20!";
-                player.HP += 20;
+                searchMessage = $"You drink the water and get healed by 30!";
+                player.HP += 30;
                 HasHealing = false;
                 Sprite = "roomFE";
                 Utilities.FullClear();
