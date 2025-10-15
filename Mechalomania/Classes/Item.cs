@@ -63,7 +63,16 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
 
         public override void Use()
         {
-            Console.WriteLine($"{Name} used to deal {Damage} damage!");
+            
+        }
+        public override void Info()
+        {
+            TextPrinter printer = new()
+            {
+                PrinterType = "1"
+            };
+            string weaponDescription = $"{Description}\nDamage: {Damage} + {EffectRoll}. ";
+            printer.Print($"{Name}: {weaponDescription}");
         }
 
         public int Use(Player player, Enemy enemy)
@@ -92,6 +101,16 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         public override void Use()
         {
             
+        }
+
+        public override void Info()
+        {
+            TextPrinter printer = new()
+            {
+                PrinterType = "1"
+            };
+            string consumableDescription = $"{Description}\nEffect: {EffectRoll} {Effect}.";
+            printer.Print($"{Name}: {consumableDescription}");
         }
 
         public void Use(Player player)

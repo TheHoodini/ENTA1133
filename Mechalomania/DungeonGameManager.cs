@@ -40,10 +40,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                 // damage test
                 //player.HP -= 10; 
 
-                player.AddDice(new List<string> { "d4", "d6", "d8", "d12", "d20" });
                 player.AddItems(new Dictionary<string, int>
                 {
-                    { "hammer", 2 },
+                    { "hammer", 3 },
                     { "screwdriver", 1 },
                     { "canteen", 2 },
                 });  
@@ -55,7 +54,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame
                 int startCol = rng.Next(cols);
                 Room startRoom = dungeon[startRow, startCol];
 
-                // Store 
+                // store location references
                 CurrentDungeon = dungeon;
                 CurrentRoom = startRoom;
                 CurrentPlayer = player;

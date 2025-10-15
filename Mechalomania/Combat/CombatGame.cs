@@ -21,7 +21,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Combat
             {
                 new("Steam Robot", "S. ROBOT", 30, 30, 3, ["1d10", "2d7"], 2, "eneRobot", "A Steam Robot comes from the shadows, its eyes still glow intensely."),
                 new("Mechasaur", "MECHASAUR", 40, 40, 1, ["1d15", "2d10"], 5, "eneMecha", "A Mechasaur comes from the depths of the sewers!"),
-                new("Evil Tractor", "E. TRACTOR", 100, 100, 1, ["1d20", "2d20"], 10, "eneTractor", "You hear a loud engine... It's an Evil Tractor!"),
+                new("Evil Truck", "E. TRUCK", 100, 100, 1, ["1d20", "2d20"], 10, "eneTruck", "You hear a loud engine... It's an Evil Truck!"),
             };
             Enemy enemy = enemies[enemyID];
             Console.WriteLine(DungeonSprites.GetSprite(enemy.Sprite));
@@ -31,9 +31,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Combat
             while (inCombat)
             {
                 Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-                Utilities.PrintHPBar(enemy.HPName, enemy.HP, enemy.MaxHP, 11);
+                Utilities.PrintHPBar(enemy.HPName, enemy.HP, enemy.MaxHP, 10);
                 //Console.WriteLine("---------------------------------------------------------------------");
-                Utilities.PrintHPBar("YOU", player.HP, 100, 11);
+                Utilities.PrintHPBar("YOU", player.HP, 100, 10);
                 Console.WriteLine("═════════════════════════════════════════════════════════════════════");
                 foreach (var item in player.Inventory)
                 {
@@ -127,13 +127,14 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Combat
                         }
                         if (enemy.HP <= 0)
                         {
-                            textPrinter.Print($"\nYou defeated the {enemy.Name}!");
+                            Console.WriteLine();
+                            textPrinter.Print($"You defeated the {enemy.Name}!");
                             inCombat = false;
                             var loot = ItemList.GetRandomItems(ItemList.ItemCategory.Any, (enemyID + 2) * 2);
                             player.AddItems(loot);
                             textPrinter.Print($"You found {Utilities.DescribeLoot(loot)} on the {enemy.Name}!");
 
-                            Console.WriteLine("\nPress any key to continue");
+                            Console.WriteLine("\nPress any key to continue.");
                             Console.ReadKey();
                             break;
                         }
@@ -148,8 +149,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Combat
                         player.HP -= enemyDamage;
                         if (player.HP <= 0)
                         {
+                            Console.WriteLine();
                             textPrinter.Print("You have been defeated...");
-                            Console.WriteLine("\nPress any key to continue");
+                            Console.WriteLine("\nPress any key to continue.");
                             Console.ReadKey();
                             return false;
                         }

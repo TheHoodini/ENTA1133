@@ -18,15 +18,15 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
 
         static ItemList()
         {
-            AddToList(new ItemWeapon("Hammer", 5, "1d10", "A hammer commonly used by workers.\nDamage: 5 + 1d10"));
-            AddToList(new ItemWeapon("Wrench", 2, "2d8", "The number 1 tool to repair pipes.\nDamage: 2 + 2d8"));
-            AddToList(new ItemWeapon("Screwdriver", 2, "3d6", "The simplest of tools.\nDamage: 2 + 3d6"));
+            AddToList(new ItemWeapon("Hammer", 10, "1d10", "A hammer commonly used by workers."));
+            AddToList(new ItemWeapon("Wrench", 6, "2d8", "The number 1 tool to repair pipes."));
+            AddToList(new ItemWeapon("Screwdriver", 2, "3d10", "The simplest of tools."));
 
-            AddToList(new ItemConsumable("Canteen", "heal", "1d25", "A bottle filled with clean water.\nHeal: 1d25"));
-            AddToList(new ItemConsumable("Coffee", "heal", "2d15", "A good drink for sleepy times.\nHeal: 2d15"));
+            AddToList(new ItemConsumable("Canteen", "heal", "1d25", "A bottle filled with clean water."));
+            AddToList(new ItemConsumable("Coffee", "heal", "2d15", "A good drink for sleepy times."));
 
-            AddToList(new ItemKey("Rusted Key", "An old but sturdy key that seems to work.\nEffect: Can open locked doors if you <check> them"));
-            AddToList(new ItemKey("Crowbar", "One of The Mechanic's tools that anyone can use!\nEffect: Can avoid traps if you <check> them"));
+            AddToList(new ItemKey("Rusted Key", "An old but sturdy key that seems to work.\nEffect: Can open locked doors if you <check> them."));
+            AddToList(new ItemKey("Crowbar", "One of The Mechanic's tools that anyone can use!\nEffect: Can avoid traps if you <check> them."));
 
             AddToList(new ItemSellable("Silver Watch", 15, "Somehow it still works.\nValue: $15"));
             AddToList(new ItemSellable("Ring", 25, "A shiny ring with a pearl on top.\nValue: $25"));

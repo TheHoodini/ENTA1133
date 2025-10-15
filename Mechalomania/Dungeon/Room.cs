@@ -208,6 +208,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                     Utilities.InputText("You search... A trap activates! You lose 10 HP.", 3);
                     return;
                 }
+                HasBeenSearched = true;
                 player.UseItem("crowbar");
                 var loot = ItemList.GetRandomItems(ItemCategory.Any, 3);
                 player.AddItems(loot);

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
 {
-    public class Player(string playerName, bool isPlayer = true)
+    public class Player(string playerName)
     {
         // Player attributes
         private string name = playerName;
@@ -165,7 +165,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
                         // No item specified
                         if (commandParts.Length < 2 || string.IsNullOrWhiteSpace(commandParts[1]))
                         {
-                            Utilities.InputText("No item specified. Type 'use <item name>'", question: "\nWhat will you do? (use, info, close):\n>");
+                            Utilities.InputText("No item specified. Type 'use <item name>'.", question: "\nWhat will you do? (use, info, close):\n>");
                             continue;
                         }
                         // Check if item is in inventory
@@ -175,7 +175,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
                             Item itemToUse = ItemList.Get(commandParts[1].Trim().ToLower());
                             if (itemToUse is not ItemConsumable consumable)
                             {
-                                Utilities.InputText($"You can't use that item here", question: "\nWhat will you do? (use, info, close):\n>");
+                                Utilities.InputText($"You can't use that item here.", question: "\nWhat will you do? (use, info, close):\n>");
                                 continue;
                             }
                             
@@ -192,7 +192,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
                             //consumable.Use(this);
                             UseItem(itemToUse.Name.ToLower());
                             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-                            Console.WriteLine("Press any key to continue");
+                            Console.WriteLine("Press any key to continue.");
                             Console.ReadKey();
                             Utilities.FullClear();
                             PrintInventory();
@@ -230,7 +230,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
                         // Does not have the item
                         else
                         {
-                            Utilities.InputText($"The item '{commandParts[1].Trim()}' is not in your inventory", question: "\nWhat will you do? (use, info, close):\n>");
+                            Utilities.InputText($"The item '{commandParts[1].Trim()}' is not in your inventory.", question: "\nWhat will you do? (use, info, close):\n>");
                         }
                         break;
                     
@@ -240,7 +240,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
                         break;
 
                     default:
-                        Utilities.InputText($"Invalid command '{input}'.", question: "\nWhat will you do? (close):\n>");
+                        Utilities.InputText($"Invalid command '{input}'.", question: "\nWhat will you do? (use, info, close):\n>");
                         break;
                 }
             }
