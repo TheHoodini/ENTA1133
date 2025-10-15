@@ -1,6 +1,5 @@
 ﻿using GD14_1133_A1_JuanDiego_DiceGame.Classes;
 using GD14_1133_A1_JuanDiego_DiceGame.Combat;
-using GD14_1133_A1_JuanDiego_DiceGame.Scripts;
 using GD14_1133_A1_JuanDiego_DiceGame.Tools;
 using System;
 using System.Collections.Generic;
@@ -112,16 +111,16 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                     case 0:
                         var loot = ItemList.GetRandomItems(ItemCategory.Loot, 2);
                         player.AddItems(loot);
-                        searchMessage = $"You search... and find {Utilities.DescribeLoot(loot)}!";
+                        searchMessage = $"You search... And find {Utilities.DescribeLoot(loot)}!";
                         break;
                     case 1:
-                        searchMessage = "You search... and find 10 coins!";
+                        searchMessage = "You search... And find 10 coins!";
                         player.Money += 10;
                         break;
                     default:
                         var loot2 = ItemList.GetRandomItems(ItemCategory.Combat, 2);
                         player.AddItems(loot2);
-                        searchMessage = $"You search... and find {Utilities.DescribeLoot(loot2)}!";
+                        searchMessage = $"You search... And find {Utilities.DescribeLoot(loot2)}!";
                         break;
                 }
                 Sprite = "roomTE";
