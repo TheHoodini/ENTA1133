@@ -86,6 +86,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         internal void UseItem(string itemName, int amount = 1)
         {
             Item item = ItemList.Get(itemName);
+            if (item is ItemConsumable consumable)
+            {
+                consumable.Use(this);
+            } else
+            {
+                item.Use();
+            }
 
             inventory[item] -= amount;
             if (inventory[item] <= 0)
@@ -124,12 +131,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         }
         internal void OpenInventory()
         {
-            bool OpenInventory = true;
+            bool openInventory = true;
             string input;
+            bool showingInfo = false;
             Utilities.FullClear();
             PrintInventory();
             Console.Write($"\n\nWhat will you do? (use, info, close):\n>");
-            while (OpenInventory) 
+            while (openInventory) 
             {
                 input = Console.ReadLine()?.ToLower() ?? "";
 
@@ -146,30 +154,81 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
                 { 
                     case "use":
                     case "u":
+                        // No item specified
+                        if (commandParts.Length < 2 || string.IsNullOrWhiteSpace(commandParts[1]))
+                        {
+                            Utilities.InputText("No item specified. Type 'use <item name>'", question: "\nWhat will you do? (use, info, close):\n>");
+                            continue;
+                        }
+                        // Check if item is in inventory
+                        if (HasItem(commandParts[1].Trim().ToLower()))
+                        {
+                            // Check if item is consumable
+                            Item itemToUse = ItemList.Get(commandParts[1].Trim().ToLower());
+                            if (itemToUse is not ItemConsumable consumable)
+                            {
+                                Utilities.InputText($"You can't use that item here", question: "\nWhat will you do? (use, info, close):\n>");
+                                continue;
+                            }
+                            
+                            if (hp == 100)
+                            {
+                                Utilities.InputText("You are already at full health!", question: "\nWhat will you do? (use, info, close):\n>");
+                                continue;
+                            }
+                            // Use the item
+                            if (showingInfo)
+                                Utilities.ClearLines(7);
+                            else
+                                Utilities.ClearLines(4);
+                            //consumable.Use(this);
+                            UseItem(itemToUse.Name.ToLower());
+                            Console.WriteLine("═════════════════════════════════════════════════════════════════════");
+                            Console.WriteLine("Press any key to continue");
+                            Console.ReadKey();
+                            Utilities.FullClear();
+                            PrintInventory();
+                            showingInfo = false;
+                            Console.Write($"\n\nWhat will you do? (use, info, close):\n>");
+                        }
+                        // Does not have the item
+                        else
+                        {
+                            Utilities.InputText($"The item '{commandParts[1].Trim()}' is not in your inventory", question: "\nWhat will you do? (use, info, close):\n>");
+                        }
                         break;
 
                     case "info":
                     case "i":
+                        // No item specified
                         if (commandParts.Length < 2 || string.IsNullOrWhiteSpace(commandParts[1]))
                         {
-                            Utilities.InputText("No item specified. Type 'info <item name>'", question: "\nWhat will you do? (use, info, close):\n>");
+                            Utilities.InputText("No item specified. Type 'info <item name>'.", question: "\nWhat will you do? (use, info, close):\n>");
                             continue;
                         }
+                        // Show item info
                         if (HasItem(commandParts[1].Trim().ToLower()))
                         {
-                            Utilities.ClearLines(4);
+                            if (showingInfo)
+                                Utilities.ClearLines(7);
+                            else
+                                Utilities.ClearLines(4);
                             Item infoItem = ItemList.Get(commandParts[1].Trim().ToLower());
                             infoItem.Info();
+                            showingInfo = true;
+                            Console.WriteLine("═════════════════════════════════════════════════════════════════════");
+                            Console.Write($"\n\nWhat will you do? (use, info, close):\n>");
                         }
+                        // Does not have the item
                         else
                         {
-                            Utilities.InputText($"The item '{commandParts[1].Trim()}' is not in your inventory", question: "\nWhat will you do? (close):\n>");
+                            Utilities.InputText($"The item '{commandParts[1].Trim()}' is not in your inventory", question: "\nWhat will you do? (use, info, close):\n>");
                         }
                         break;
                     
                     case "close":
                     case "c":
-                        OpenInventory = false;
+                        openInventory = false;
                         break;
 
                     default:

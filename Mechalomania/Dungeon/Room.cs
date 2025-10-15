@@ -97,18 +97,23 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
         public override void OnRoomSearched(Player player)
         {
             string searchMessage;
+            int clearLines;
             if (HasTreasure)
             {
                 var loot = ItemList.GetRandomItems(ItemCategory.Loot, 5);
                 player.AddItems(loot);
                 searchMessage = $"You search... and find {Utilities.DescribeLoot(loot)}!";
+                Sprite = "roomTE";
                 HasTreasure = false;
+                Utilities.RefreshDungeonGame();
+                clearLines = 3;
             }
             else
             {
                 searchMessage = "You already took the treasure. Nothing remains here.";
+                clearLines = 4;
             }
-            Utilities.InputText(searchMessage, 4);
+            Utilities.InputText(searchMessage, clearLines);
         }
 
         public override string MapSymbol() => HasTreasure ? "T" : " ";

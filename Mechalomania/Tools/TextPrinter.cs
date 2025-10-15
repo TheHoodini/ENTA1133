@@ -23,11 +23,19 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
             {
                 foreach (char c in text)
                 {
-                    Console.Write(c);
-                    Thread.Sleep(20);
+                    if (c == '\n')
+                    {
+                        Console.Write(c);           
+                        Thread.Sleep(400);         
+                    }
+                    else
+                    {
+                        Console.Write(c);          
+                        Thread.Sleep(15);          
+                    }
                 }
+                Thread.Sleep(200);
                 Console.WriteLine();
-                Thread.Sleep(100);
             }
             else
             {

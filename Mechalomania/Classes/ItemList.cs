@@ -20,16 +20,16 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         {
             AddToList(new ItemWeapon("Hammer", 5, "1d10", "A hammer commonly used by workers.\nDamage: 5 + 1d10"));
             AddToList(new ItemWeapon("Wrench", 2, "2d4", "The number 1 tool to repair pipes.\nDamage: 2 + 2d4"));
-            AddToList(new ItemWeapon("Screwdriver", 1, "2d3", "A simple screwdriver.\nDamage: 1 + 2d3"));
+            AddToList(new ItemWeapon("Screwdriver", 1, "2d3", "The simplest of tools.\nDamage: 1 + 2d3"));
 
-            AddToList(new ItemConsumable("Canteen", "heal", "1d4", "A bottle filled with clean water that heals you."));
-            AddToList(new ItemConsumable("Coffee", "heal", "1d4", "A drink that boosts your energy for a short time."));
+            AddToList(new ItemConsumable("Canteen", "heal", "1d20", "A bottle filled with clean water.\nHeal: 1d20"));
+            AddToList(new ItemConsumable("Coffee", "heal", "2d10", "A good drink for sleepy times.\n Heal: 2d10"));
 
-            AddToList(new ItemKey("Rusted Key", "An old but sturdy key that opens doors."));
-            AddToList(new ItemKey("Crowbar", "One of The Mechanic's tools that can stop traps."));
+            AddToList(new ItemKey("Rusted Key", "An old but sturdy key that seems to work.\nEffect: Can open locked doors if you <check> them"));
+            AddToList(new ItemKey("Crowbar", "One of The Mechanic's tools that anyone can use!\nEffect: Can avoid traps if you <check> them"));
 
-            AddToList(new ItemSellable("Silver Watch", 15, "Somehow it still works."));
-            AddToList(new ItemSellable("Ring", 25, "A shiny ring with a silver pearl on top."));
+            AddToList(new ItemSellable("Silver Watch", 15, "Somehow it still works.\nValue: $15"));
+            AddToList(new ItemSellable("Ring", 25, "A shiny ring with a pearl on top.\nValue: $25"));
 
             // Default item for errors
             AddToList(new ItemUnknown());

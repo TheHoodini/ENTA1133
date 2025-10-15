@@ -1,4 +1,5 @@
-﻿using GD14_1133_A1_JuanDiego_DiceGame.Tools;
+﻿using GD14_1133_A1_JuanDiego_DiceGame.Combat;
+using GD14_1133_A1_JuanDiego_DiceGame.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,8 +34,10 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
 
         public virtual void Info()
         {
-            TextPrinter printer = new();
-            printer.PrinterType = "1";
+            TextPrinter printer = new()
+            {
+                PrinterType = "1"
+            };
             printer.Print($"{Name}: {Description}");
         }
     }
@@ -77,17 +80,19 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
 
         public override void Use()
         {
-            Console.WriteLine($"{Name} consumed: {Effect}");
+            
         }
 
         public void Use(Player player)
         {
-            Console.WriteLine($"You used the {Name}.");
-            
-            if (Effect.ToLower().Contains("heal"))
+            TextPrinter printer = new()
             {
-                player.HP += 20; 
-                Console.WriteLine($"You healed {20} HP!");
+                PrinterType = "1"
+            };
+            printer.Print($"You used the {Name}.");
+            if (Effect == "heal")
+            {
+                player.HP += CombatRoller.Heal(EffectRoll);
             }
         }
 
