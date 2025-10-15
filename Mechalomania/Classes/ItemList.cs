@@ -26,7 +26,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             AddToList(new ItemConsumable("Coffee", "heal", "2d15", "A good drink for sleepy times."));
 
             AddToList(new ItemKey("Rusted Key", "An old but sturdy key that seems to work.\nEffect: Can open locked doors if you <check> them."));
-            AddToList(new ItemKey("Crowbar", "One of The Mechanic's tools that anyone can use!\nEffect: Can avoid traps if you <check> them."));
+            AddToList(new ItemKey("Crowbar", "One of The Mechanic's tools that anyone can use!\nEffect: Can disable traps if you <check> them."));
 
             AddToList(new ItemSellable("Silver Watch", 15, "Somehow it still works.\nValue: $15"));
             AddToList(new ItemSellable("Ring", 25, "A shiny ring with a pearl on top.\nValue: $25"));

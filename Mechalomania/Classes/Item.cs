@@ -81,7 +81,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             {
                 PrinterType = "1"
             };
-            printer.Print($"You used the {Name}.");
+            printer.Print($"You used a {Name}.");
             int totalDamage = CombatRoller.Attack(Damage, EffectRoll, true);
             return totalDamage;
         }
@@ -119,7 +119,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             {
                 PrinterType = "1"
             };
-            printer.Print($"You used the {Name}.");
+            printer.Print($"You used a {Name}.");
             if (Effect == "heal")
             {
                 player.HP += CombatRoller.Heal(EffectRoll);

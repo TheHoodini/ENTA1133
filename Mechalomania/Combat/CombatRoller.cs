@@ -10,16 +10,16 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Combat
     public static class CombatRoller
     {
         private static readonly Random _random = new();
-        private static readonly TextPrinter textPrinter = new()
+        private static readonly TextPrinter printer = new()
         {
             PrinterType = "1"
         };
-        private static TextPrinter printer = textPrinter;
 
-        private static (int total, bool isCritical) RollDice(string dice)
+        private static (int total, bool isCritical, bool isMiss) RollDice(string dice)
         {
             int total = 0;
             bool isCritical = true;
+            bool isMiss = true;
 
             var diceParts = dice.Split(',');
 
@@ -43,32 +43,42 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Combat
                     total += roll;
 
                     if (roll != sides)
-                    {
                         isCritical = false;
-                    }
+                    if (roll != 1)
+                        isMiss = false;
                 }
             }
 
-            return (total, isCritical);
+            return (total, isCritical, isMiss);
         }
 
         public static int Heal(string dice)
         {
-            var (result, _) = RollDice(dice);
+            var (result, _, _) = RollDice(dice);
             printer.Print($"You healed {result} HP!");
             return result;
         }
 
         public static int Attack(int damage, string dice, bool isPlayer)
         {
-            var (result, isCritical) = RollDice(dice);
+            var (result, isCritical, isMiss) = RollDice(dice);
+
+            if (isMiss)
+            {
+                if (isPlayer)
+                    printer.Print("You missed!");
+                else
+                    printer.Print("It missed!");
+                return 0;
+            }
+
             result += damage;
 
             if (isCritical)
             {
                 result *= 2;
                 if (isPlayer)
-                    printer.Print($"Critical hit! You did {result} damage!");
+                    printer.Print($"A critical hit! You did {result} damage!");
                 else
                     printer.Print($"Oh no, a critical hit! You took {result} damage!");
             }
@@ -83,6 +93,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Combat
             return result;
         }
     }
+
 
 
 }

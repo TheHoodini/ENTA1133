@@ -123,17 +123,31 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             Console.WriteLine($"Name: The {name}");
             Console.WriteLine($"HP: {hp}/100");
             Console.WriteLine($"Coins: ${money}\n");
-            Console.WriteLine("Items:");
-            if (inventory.Count > 0)
+            Console.WriteLine("Combat items:");
+            if (inventory.Count(item => item.Key is ItemCombat) == 0)
+                Console.WriteLine("- None");
+            else
             {
                 foreach (var item in inventory)
                 {
-                    Console.WriteLine($"- {item.Key.Name} x{item.Value}");
+                    if (item.Key is ItemCombat)
+                    {
+                        Console.WriteLine($"- {item.Key.Name} x{item.Value}");
+                    }
                 }
             }
+            Console.WriteLine("Loot:");
+            if (inventory.Count(item => item.Key is ItemLoot) == 0)
+                Console.WriteLine("- None");
             else
             {
-                Console.WriteLine("- None.");
+                foreach (var item in inventory)
+                {
+                    if (item.Key is ItemLoot)
+                    {
+                        Console.WriteLine($"- {item.Key.Name} x{item.Value}");
+                    }
+                }
             }
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
         }
