@@ -9,19 +9,18 @@ using System.Threading.Tasks;
 
 namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
 {
-    public class Player(string playerName, bool isPlayer = true)
+    public class Player(string playerName)
     {
         // Player attributes
         private string name = playerName;
         private int score = 0;
         private List<string> dice = new();
-        private Dictionary<string, int> inventory = new();
+        private Dictionary<Item, int> inventory = new();
         private string summary = "";
         private int hp = 100;
         private int money = 0;
         private bool isPlaying = true;
 
-        private readonly DieRoller dieRoller = new();
         private List<int> pastRolls = new(); // Track all roll results
         private List<string> diceUsedHistory = new(); // Track the types of dice used
 
@@ -44,7 +43,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
         public int Score => score;
         public string Summary => summary;
         internal List<string> Dice => new List<string>(dice);
-        internal Dictionary<string, int> Inventory => new Dictionary<string, int>(inventory);
+        internal Dictionary<Item, int> Inventory => new Dictionary<Item, int>(inventory);
 
         internal void ChangeName(string newName)
         {
@@ -61,101 +60,205 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Classes
             dice.AddRange(diceToAdd);
         }
 
-        internal void AddToInventory(string item, int quantity = 1)
+        internal void AddItem(string itemName, int amount = 1)
         {
+            Item item = ItemList.Get(itemName);
+
             if (inventory.ContainsKey(item))
             {
-                inventory[item] += quantity;
+                inventory[item] += amount;
             }
             else
             {
-                inventory[item] = quantity;
+                inventory[item] = amount;
             }
         }
 
-        internal void UseItem(string item, int quantity = 1)
+        internal void AddItems(Dictionary<string, int> items)
         {
-            inventory[item] -= quantity;
+            foreach (var itemElement in items)
+            {
+                AddItem(itemElement.Key, itemElement.Value);
+            }
+        }
+
+        private Enemy voidEnemy = new ("Void", "VOID", 1, 1, 1, ["1d1"], 5, "", "");
+        internal int? UseItem(string itemName, int amount = 1, Enemy? enemy = null)
+        {
+            if (enemy == null) enemy = voidEnemy;
+            Item item = ItemList.Get(itemName);
+
+            int? result = null;
+
+            if (item is ItemConsumable consumable)
+            {
+                consumable.Use(this); // void return
+            }
+            else if (item is ItemWeapon weapon)
+            {
+                result = weapon.Use(this, enemy); // weapon damage
+            }
+
+            inventory[item] -= amount;
             if (inventory[item] <= 0)
             {
                 inventory.Remove(item);
             }
+
+            return result;
         }
 
-        internal void OpenInventory()
+        public bool HasItem(string itemName, int requiredAmount = 1)
         {
-            Utilities.FullClear();
+            Item item = ItemList.Get(itemName);
+
+            return inventory.TryGetValue(item, out int amount) && amount >= requiredAmount;
+        }
+
+        internal void PrintInventory()
+        {
             Console.WriteLine(DungeonSprites.GetSprite("uiInv"));
             Console.WriteLine("                            INVENTORY");
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
             Console.WriteLine($"Name: The {name}");
             Console.WriteLine($"HP: {hp}/100");
             Console.WriteLine($"Coins: ${money}\n");
-            Console.WriteLine("Dice: " + (dice.Count > 0 ? string.Join(", ", dice) : "None"));
-            if (inventory.Count > 0)
+            Console.WriteLine("Combat items:");
+            if (inventory.Count(item => item.Key is ItemCombat) == 0)
+                Console.WriteLine("- None");
+            else
             {
-                Console.WriteLine("Items:");
                 foreach (var item in inventory)
                 {
-                    Console.WriteLine($"- {item.Key} x{item.Value}");
+                    if (item.Key is ItemCombat)
+                    {
+                        Console.WriteLine($"- {item.Key.Name} x{item.Value}");
+                    }
+                }
+            }
+            Console.WriteLine("Loot:");
+            if (inventory.Count(item => item.Key is ItemLoot) == 0)
+                Console.WriteLine("- None");
+            else
+            {
+                foreach (var item in inventory)
+                {
+                    if (item.Key is ItemLoot)
+                    {
+                        Console.WriteLine($"- {item.Key.Name} x{item.Value}");
+                    }
                 }
             }
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-            Console.Write($"\n\nWhat will you do? (close):\n>");
-            string input = Console.ReadLine()?.ToLower() ?? "";
-            while (input != "close" && input != "c")
-            {
-                Utilities.InputText($"Invalid command '{input}'. Type 'close' to exit inventory.", question: "\nWhat will you do? (close):\n>");
-                input = Console.ReadLine()?.ToLower() ?? "";
-            }
-            Utilities.RefreshDungeonGame();
         }
-
-        internal int UseDie(string die, TextPrinter printer)
+        internal void OpenInventory()
         {
-            // Roll the die
-            int roll = dieRoller.Roll(die, printer, isPlayer);
-            pastRolls.Add(roll);
-            diceUsedHistory.Add(die);
-            //addScore(roll);
-            dice.Remove(die);
-
-            int total = pastRolls.Sum();
-            int highest = pastRolls.Max();
-            int evens = pastRolls.Count(r => r % 2 == 0);
-            int odds = pastRolls.Count - evens;
-
-            // Calculate expected average total
-            int expectedTotal = 0;
-            foreach (var usedDie in pastRolls.Zip(diceUsedHistory, (rollValue, dieType) => dieType))
+            bool openInventory = true;
+            string input;
+            bool showingInfo = false;
+            Utilities.FullClear();
+            PrintInventory();
+            Console.Write($"\n\nWhat will you do? (use, info, close):\n>");
+            while (openInventory) 
             {
-                if (int.TryParse(usedDie[1..], out int sides))
+                input = Console.ReadLine()?.ToLower() ?? "";
+
+                if (string.IsNullOrWhiteSpace(input))
                 {
-                    expectedTotal += (int)Math.Round((sides + 1) / 2.0);
+                    Utilities.InputText("Please enter a command.", question: "\nWhat will you do? (use, info, close):\n>");
+                    continue;
+                }
+
+                string[] commandParts = input.Split(' ', 2); 
+                string command = commandParts[0].ToLower();
+
+                switch (command) 
+                { 
+                    case "use":
+                    case "u":
+                        // No item specified
+                        if (commandParts.Length < 2 || string.IsNullOrWhiteSpace(commandParts[1]))
+                        {
+                            Utilities.InputText("No item specified. Type 'use <item name>'.", question: "\nWhat will you do? (use, info, close):\n>");
+                            continue;
+                        }
+                        // Check if item is in inventory
+                        if (HasItem(commandParts[1].Trim().ToLower()))
+                        {
+                            // Check if item is consumable
+                            Item itemToUse = ItemList.Get(commandParts[1].Trim().ToLower());
+                            if (itemToUse is not ItemConsumable consumable)
+                            {
+                                Utilities.InputText($"You can't use that item here.", question: "\nWhat will you do? (use, info, close):\n>");
+                                continue;
+                            }
+                            
+                            if (hp == 100)
+                            {
+                                Utilities.InputText("You are already at full health!", question: "\nWhat will you do? (use, info, close):\n>");
+                                continue;
+                            }
+                            // Use the item
+                            if (showingInfo)
+                                Utilities.ClearLines(7);
+                            else
+                                Utilities.ClearLines(4);
+                            //consumable.Use(this);
+                            UseItem(itemToUse.Name.ToLower());
+                            Console.WriteLine("═════════════════════════════════════════════════════════════════════");
+                            Console.WriteLine("Press any key to continue.");
+                            Console.ReadKey();
+                            Utilities.FullClear();
+                            PrintInventory();
+                            showingInfo = false;
+                            Console.Write($"\n\nWhat will you do? (use, info, close):\n>");
+                        }
+                        // Does not have the item
+                        else
+                        {
+                            Utilities.InputText($"The item '{commandParts[1].Trim()}' is not in your inventory", question: "\nWhat will you do? (use, info, close):\n>");
+                        }
+                        break;
+
+                    case "info":
+                    case "i":
+                        // No item specified
+                        if (commandParts.Length < 2 || string.IsNullOrWhiteSpace(commandParts[1]))
+                        {
+                            Utilities.InputText("No item specified. Type 'info <item name>'.", question: "\nWhat will you do? (use, info, close):\n>");
+                            continue;
+                        }
+                        // Show item info
+                        if (HasItem(commandParts[1].Trim().ToLower()))
+                        {
+                            if (showingInfo)
+                                Utilities.ClearLines(7);
+                            else
+                                Utilities.ClearLines(4);
+                            Item infoItem = ItemList.Get(commandParts[1].Trim().ToLower());
+                            infoItem.Info();
+                            showingInfo = true;
+                            Console.WriteLine("═════════════════════════════════════════════════════════════════════");
+                            Console.Write($"\n\nWhat will you do? (use, info, close):\n>");
+                        }
+                        // Does not have the item
+                        else
+                        {
+                            Utilities.InputText($"The item '{commandParts[1].Trim()}' is not in your inventory.", question: "\nWhat will you do? (use, info, close):\n>");
+                        }
+                        break;
+                    
+                    case "close":
+                    case "c":
+                        openInventory = false;
+                        break;
+
+                    default:
+                        Utilities.InputText($"Invalid command '{input}'.", question: "\nWhat will you do? (use, info, close):\n>");
+                        break;
                 }
             }
-
-            // Comment based on total vs expected
-            string totalComment;
-            if (total < expectedTotal)
-            {
-                totalComment = "That was the best you got?";
-            }
-            else if (total > expectedTotal)
-            {
-                totalComment = "You're truly a dice master!";
-            }
-            else
-            {
-                totalComment = "Not bad!";
-            }
-
-            summary = $"You rolled {pastRolls.Count} dice in total.\n" +
-                      $"Your total score was {total}. {totalComment}\n" +
-                      $"Your highest roll was {highest}.\n" +
-                      $"You had {evens} even rolls and {odds} odd rolls.";
-
-            return roll;
+            Utilities.RefreshDungeonGame();
         }
 
         internal void Reset()

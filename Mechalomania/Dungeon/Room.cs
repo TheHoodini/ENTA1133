@@ -1,11 +1,13 @@
 ﻿using GD14_1133_A1_JuanDiego_DiceGame.Classes;
-using GD14_1133_A1_JuanDiego_DiceGame.Scripts;
+using GD14_1133_A1_JuanDiego_DiceGame.Combat;
 using GD14_1133_A1_JuanDiego_DiceGame.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using static GD14_1133_A1_JuanDiego_DiceGame.Classes.ItemList;
 
 namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
 {
@@ -83,8 +85,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     public class RoomTreasure : Room
     {
         private bool HasTreasure = true;
+        private Random rng = new();
+        private int treasureID;
 
-        public RoomTreasure(int index, int row, int col) : base(index, row, col, "roomT") { }
+        public RoomTreasure(int index, int row, int col) : base(index, row, col, "roomT") 
+        { 
+            treasureID = rng.Next(3);
+        }
 
         public override string RoomDescription()
         {
@@ -96,30 +103,35 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
         public override void OnRoomSearched(Player player)
         {
             string searchMessage;
-            int clearLines = HasTreasure ? 3 : 4;
-            Random rng = new Random();
+            int clearLines;
             if (HasTreasure)
             {
-                int coinflip = rng.Next(0, 2);
-                if (coinflip == 0)
+                switch (treasureID)
                 {
-                    string die = "d" + rng.Next(4, 26);
-                    player.AddDice(new List<string> { die });
-                    searchMessage = $"You search the room and find a {die} die!";
+                    case 0:
+                        var loot = ItemList.GetRandomItems(ItemCategory.Loot, 2);
+                        player.AddItems(loot);
+                        searchMessage = $"You search... And find {Utilities.DescribeLoot(loot)}!";
+                        break;
+                    case 1:
+                        searchMessage = "You search... And find 10 coins!";
+                        player.Money += 10;
+                        break;
+                    default:
+                        var loot2 = ItemList.GetRandomItems(ItemCategory.Combat, 2);
+                        player.AddItems(loot2);
+                        searchMessage = $"You search... And find {Utilities.DescribeLoot(loot2)}!";
+                        break;
                 }
-                else
-                {
-                    player.AddToInventory("Rusted key");
-                    searchMessage = $"You search the room and find a rusted key!";
-                }
-                HasTreasure = false;
                 Sprite = "roomTE";
-                Utilities.FullClear();
+                HasTreasure = false;
                 Utilities.RefreshDungeonGame();
+                clearLines = 3;
             }
             else
             {
                 searchMessage = "You already took the treasure. Nothing remains here.";
+                clearLines = 4;
             }
             Utilities.InputText(searchMessage, clearLines);
         }
@@ -130,7 +142,13 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     public class RoomCombat : Room
     {
         private bool HasCombat = true;
-        public RoomCombat(int index, int row, int col) : base(index, row, col, "roomC") { }
+        private Random rng = new();
+        private int enemyID;
+
+        public RoomCombat(int index, int row, int col) : base(index, row, col, "roomC")
+        {
+            enemyID = rng.Next(3);
+        }
 
         public override string RoomDescription() 
         {
@@ -143,9 +161,9 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
         {
             if (HasCombat)
             {
-                DiceGameManager diceGame = new(player);
+                //DiceGameManager diceGame = new(player);
                 Utilities.FullClear();
-                HasCombat = diceGame.Play();
+                HasCombat = CombatGame.Start(player, enemyID);
                 if (!HasCombat) {
                     Sprite = "roomE";
                 }
@@ -163,11 +181,15 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
     public class RoomTrap : Room
     {
         private bool HasBeenSearched = false;
+        private bool HasTreasure = true;
 
         public RoomTrap(int index, int row, int col) : base(index, row, col, "roomT") { }
 
         public override string RoomDescription()
         {
+            if (HasBeenSearched && !HasTreasure)
+                return ", where there used to be a trap with a treasure";
+
             return HasBeenSearched
                 ? ". Be careful, something feels wrong here."
                 : " and you find a treasure!";
@@ -175,14 +197,34 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
 
         public override void OnRoomSearched(Player player)
         {
-            HasBeenSearched = true;
-            Utilities.FullClear();
-            player.HP -= 10;
-            Utilities.RefreshDungeonGame();
-            Utilities.InputText("You tried to search... But you found a trap! you received 10 damage.", 3);
-        }
+            if (HasTreasure)
+            {
+                if (!player.HasItem("crowbar"))
+                {
+                    HasBeenSearched = true;
+                    player.HP -= 10;
+                    Utilities.FullClear();
+                    Utilities.RefreshDungeonGame();
+                    Utilities.InputText("You search... A trap activates! You lose 10 HP.", 3);
+                    return;
+                }
+                HasBeenSearched = true;
+                player.UseItem("crowbar");
+                var loot = ItemList.GetRandomItems(ItemCategory.Any, 3);
+                player.AddItems(loot);
+                HasTreasure = false;
+                Sprite = "roomTE";
+                Utilities.FullClear();
+                Utilities.RefreshDungeonGame();
+                Utilities.InputText($"You used the crowbar to disable the trap. You search... And find {Utilities.DescribeLoot(loot)}!", 3);
 
-        public override string MapSymbol() => "t";
+            }
+            else
+            {
+                Utilities.InputText("You already searched here, nothing remains.");
+            }
+        }
+        public override string MapSymbol() => HasTreasure ? "T" : " ";
     }
 
     public class RoomHealing : Room
@@ -211,8 +253,8 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                     return;
                 }
                 clearLines = 3;
-                searchMessage = $"You drink the water and get healed by 20!";
-                player.HP += 20;
+                searchMessage = $"You drink the water and get healed by 30!";
+                player.HP += 30;
                 HasHealing = false;
                 Sprite = "roomFE";
                 Utilities.FullClear();
@@ -247,16 +289,16 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
             int clearLines = 4;
             if (IsLocked)
             {
-                if (!player.Inventory.ContainsKey("Rusted key"))
+                if (!player.HasItem("rusted key"))
                 {
                     searchMessage = "You need a key to open this door.";
                     Utilities.InputText(searchMessage, clearLines);
                     return;
                 }
                 clearLines = 3;
-                searchMessage = $"You used the rusted key. Behind the door you find 20 coins!";
-                player.UseItem("Rusted key");
-                player.Money += 20;
+                searchMessage = $"You used the rusted key. Behind the door you find 30 coins!";
+                player.UseItem("rusted key");
+                player.Money += 30;
                 IsLocked = false;
                 Sprite = "roomLO";
                 Utilities.FullClear();
@@ -267,6 +309,7 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
                 searchMessage = "There is nothing more behind the door.";
             }
             Utilities.InputText(searchMessage, clearLines);
+
         }
 
         public override string MapSymbol() => IsLocked ? "L" : " ";

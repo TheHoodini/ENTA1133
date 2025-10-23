@@ -74,20 +74,47 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Tools
 
         public static void PrintDungeonUI(Room[,] dungeon, Room playerRoom, Player player)
         {
-            string hpBar = "";
-            int NumHpBars = 15;
-            int maxHp = 100;
-            int filledBars = (int)Math.Ceiling((player.HP / (double)maxHp) * NumHpBars);
-            hpBar = new string('█', filledBars) + new string('░', NumHpBars - filledBars);
-
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
-            Console.WriteLine($"HP   {player.HP}/{maxHp} {hpBar}");
+            PrintHPBar("HP", player.HP);
             Console.WriteLine($"$$   {player.Money}");
             Console.WriteLine("MAP");
             PrintMap(dungeon, playerRoom);
             Console.WriteLine("═════════════════════════════════════════════════════════════════════");
             Console.Write($"\n\nWhat will you do? (w/a/s/d, check, inventory):\n>");
         }
+
+        public static void PrintHPBar(string label, int currentHP, int maxHP = 100, int defaultSpace1 = 5)
+        {
+            string hpBar = "";
+            int NumHpBars = 16;
+            int filledBars = (int)Math.Ceiling((currentHP / (double)maxHP) * NumHpBars);
+            hpBar = new string('█', filledBars) + new string('░', NumHpBars - filledBars);
+            string space1 = new string(' ', Math.Max(0, defaultSpace1 - label.Length));
+            string space2 = new string(' ', Math.Max(0, 7 - (currentHP.ToString() + maxHP).Length));
+            Console.WriteLine($"{label}{space1}{currentHP}/{maxHP}{space2}{hpBar}");
+        }
+
+        public static string DescribeLoot(Dictionary<string, int> items)
+        {
+            var itemNames = new List<string>();
+
+            foreach (var entry in items)
+            {
+                if (entry.Value == 1)
+                    itemNames.Add($"a {entry.Key}");
+                else
+                    itemNames.Add($"{entry.Value} {entry.Key}s");
+            }
+
+            if (itemNames.Count == 1)
+                return itemNames[0];
+
+            var lastItem = itemNames[^1];
+            var allButLast = itemNames.Take(itemNames.Count - 1);
+
+            return $"{string.Join(", ", allButLast)} and {lastItem}";
+        }
+
 
         public static void RefreshDungeonGame()
         {

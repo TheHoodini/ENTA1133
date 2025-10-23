@@ -20,10 +20,10 @@ namespace GD14_1133_A1_JuanDiego_DiceGame.Dungeon
             {
                 { "e", 50 }, // Empty 
                 { "t", 14 }, // Treasure 
-                { "c", 10 },  // Combat 
-                { "tt", 10 }, // Trap 
-                { "f", 8 },   // Fountain
-                { "l", 8 }   // Locked
+                { "c", 14 },  // Combat 
+                { "tt", 8 }, // Trap 
+                { "f", 6 },   // Fountain
+                { "l", 8 }   // Locked door
             };
 
             // Create rooms
